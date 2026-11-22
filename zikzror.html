@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZIKZ APP // MONITORING DASHBOARD</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --bg: #050507;
+      --surface: rgba(15, 15, 20, 0.92);
+      --surface-elevated: #0d0d12;
+      --border: rgba(255, 255, 255, 0.12);
+      --border-fire: rgba(255, 77, 0, 0.55);
+      --text: #f9fafb;
+      --muted: #94a3b8;
+      --fire-1: #ff5100;
+      --fire-2: #ff1e42;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      padding: 1.5rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #ff9e75;
+      background: #050507;
+      border: 1px solid rgba(255, 81, 0, 0.5);
+      padding: 0.4rem 1.1rem;
+      border-radius: 999px;
+      margin-bottom: 0.8rem;
+    }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff, var(--fire-1));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ff9c73;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .accent-bar {
+      width: 4px;
+      height: 16px;
+      border-radius: 99px;
+      background: linear-gradient(180deg, var(--fire-1), var(--fire-2));
+    }
+
+    .btn-refresh {
+      background: #050507;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-refresh:hover {
+      background: #14141a;
+      border-color: var(--fire-1);
+    }
+
+    .web-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .web-item {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      transition: border-color 0.2s;
+    }
+
+    .web-item:hover {
+      border-color: var(--border-fire);
+    }
+
+    .web-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .web-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .web-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .btn-open {
+      background: linear-gradient(135deg, var(--fire-1), var(--fire-2));
+      color: #fff;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(255, 42, 66, 0.3);
+    }
+
+    .btn-open:hover {
+      filter: brightness(1.1);
+    }
+
+    .loading, .empty {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">ZIKZ APP ANALYTICS</div>
+      <h1 class="title">Web Monitoring Dashboard</h1>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total Web Dibuat</span>
+        <span class="stat-value" id="stat-total-web">-</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Total Pengunjung Dashboard</span>
+        <span class="stat-value" id="stat-views">-</span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <span class="accent-bar"></span>
+          <span>Daftar Web Yang Dibuat Pengguna</span>
+        </div>
+        <button class="btn-refresh" onclick="fetchWebList()">Refresh Data</button>
+      </div>
+
+      <div id="web-list-container" class="web-list">
+        <div class="loading">Memuat data dari GitHub...</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const GH_OWNER = 'stokemailzikzstr-coder';
+    const GH_REPO = 'my-web';
+
+    async function fetchWebList() {
+      const container = document.getElementById('web-list-container');
+      const statTotal = document.getElementById('stat-total-web');
+      container.innerHTML = '<div class="loading">Memuat data dari GitHub...</div>';
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`);
+        if (!res.ok) throw new Error('Gagal mengambil data dari GitHub');
+
+        const files = await res.json();
+
+        const htmlFiles = files.filter(file =>
+          file.name.endsWith('.html') &&
+          file.name !== 'index.html' &&
+          file.name !== 'dasborzikzapp.html'
+        );
+
+        statTotal.textContent = htmlFiles.length;
+
+        if (htmlFiles.length === 0) {
+          container.innerHTML = '<div class="empty">Belum ada web baru yang dibuat oleh pengguna.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        htmlFiles.forEach(file => {
+          const liveUrl = `https://${GH_OWNER}.github.io/${GH_REPO}/${file.name}`;
+
+          const item = document.createElement('div');
+          item.className = 'web-item';
+          item.innerHTML = `
+            <div class="web-info">
+              <span class="web-name">${file.name}</span>
+              <span class="web-date">Ukuran File: ${(file.size / 1024).toFixed(1)} KB</span>
+            </div>
+            <a href="${liveUrl}" target="_blank" rel="noopener noreferrer" class="btn-open">Buka Web</a>
+          `;
+          container.appendChild(item);
+        });
+
+      } catch (err) {
+        container.innerHTML = `<div class="empty" style="color:#ef4444;">Error: ${err.message}</div>`;
+        statTotal.textContent = '0';
+      }
+    }
+
+    async function fetchVisitorCount() {
+      const viewsEl = document.getElementById('stat-views');
+      const localKey = 'zikzapp_dash_views';
+
+      try {
+        const res = await fetch('https://api.counterapi.dev/v1/zikzapp-my-web/dasborzikzapp/up');
+        if (!res.ok) throw new Error('API counter tidak merespons');
+        const data = await res.json();
+        const count = data.count ?? data.value ?? 0;
+        localStorage.setItem(localKey, String(count));
+        viewsEl.textContent = Number(count).toLocaleString('id-ID');
+      } catch (err) {
+        const currentLocal = Number(localStorage.getItem(localKey) || '0') + 1;
+        localStorage.setItem(localKey, String(currentLocal));
+        viewsEl.textContent = currentLocal.toLocaleString('id-ID');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchWebList();
+      fetchVisitorCount();
+    });
+  </script>
+</body>
+</html>

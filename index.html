@@ -307,13 +307,17 @@
       return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
     }
 
-    async function fetchAdminToken() {
-      const { fullSlug } = getRepoTarget();
-      const rawUrl = `https://raw.githubusercontent.com/${fullSlug}/HEAD/config.json?t=${Date.now()}`;
-      const res = await fetch(rawUrl, { cache: 'no-store' });
-      if (!res.ok) return '';
-      const cfg = await res.json();
-      return (cfg && typeof cfg.ghToken === 'string') ? cfg.ghToken.trim() : '';
+    function getAdminTokenFromStorage() {
+      try {
+        return (
+          localStorage.getItem('zikzapp_admin_token_v1') ||
+          localStorage.getItem('zikzapp_admin_token') ||
+          localStorage.getItem('zikzapp_gh_token') ||
+          ''
+        ).trim();
+      } catch (err) {
+        return '';
+      }
     }
 
     async function checkZikzMaintenance() {
@@ -426,16 +430,17 @@
         return;
       }
 
+      const token = getAdminTokenFromStorage();
+      if (!token) {
+        statusEl.innerHTML = 'Token admin belum tersimpan di browser ini. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk menyimpan token admin.';
+        return;
+      }
+
       btnPublish.disabled = true;
       linkActions.classList.add('hidden');
       statusEl.textContent = 'Menyiapkan publish...';
 
       try {
-        const token = await fetchAdminToken();
-        if (!token) {
-          throw new Error('Token belum diatur di dasbor.');
-        }
-
         const slug = buildSlug(rawName);
         const fileName = `${slug}.html`;
         const { fullSlug, pagesBase } = getRepoTarget();

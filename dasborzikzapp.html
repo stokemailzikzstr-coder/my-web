@@ -237,7 +237,7 @@
       color: var(--text);
       border: 1px solid var(--border);
       padding: 0.5rem 0.95rem;
-      border-radius: 9px;
+      border-radius: 99px;
       font-family: 'Chakra Petch', sans-serif;
       font-size: 0.76rem;
       font-weight: 700;
@@ -409,26 +409,51 @@
       return btoa(binary);
     }
 
+    function fromBase64Utf8(str) {
+      const binary = atob(str);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new TextDecoder().decode(bytes);
+    }
+
     async function loadMaintenanceStatus() {
       const modeSelect = document.getElementById('maintenance-mode');
       const msgInput = document.getElementById('maintenance-message');
       const statusBadge = document.getElementById('stat-maintenance-label');
+      const token = (document.getElementById('dash-gh-token').value || '').trim();
 
       try {
-        const url = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/HEAD/${MAINT_FILE}?t=${Date.now()}`;
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) {
-          statusBadge.textContent = 'AKTIF';
-          modeSelect.value = 'false';
-          return;
+        let isMaint = false;
+        let message = '';
+
+        // Prioritas pake GitHub API langsung kalo ada token biar realtime tanpa cache CDN
+        if (token) {
+          const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${MAINT_FILE}?t=${Date.now()}`;
+          const res = await fetch(apiUrl, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const decodedContent = JSON.parse(fromBase64Utf8(data.content.replace(/\n/g, '')));
+            isMaint = Boolean(decodedContent && decodedContent.maintenance === true);
+            message = decodedContent.message || '';
+          }
+        } else {
+          // Fallback kalo token belum diisi
+          const url = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/HEAD/${MAINT_FILE}?t=${Date.now()}`;
+          const res = await fetch(url, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            isMaint = Boolean(data && data.maintenance === true);
+            message = data.message || '';
+          }
         }
 
-        const data = await res.json();
-        const isMaint = Boolean(data && data.maintenance === true);
         modeSelect.value = isMaint ? 'true' : 'false';
-        if (data && data.message) {
-          msgInput.value = data.message;
-        }
+        if (message) msgInput.value = message;
         statusBadge.textContent = isMaint ? 'MAINTENANCE' : 'AKTIF';
       } catch (err) {
         statusBadge.textContent = 'AKTIF';
@@ -465,7 +490,7 @@
         const checkRes = await fetch(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
-            Accept: 'application/vnd.github+json'
+            Accept: 'application/vnd.github+json`
           }
         });
         if (checkRes.ok) {
@@ -502,8 +527,8 @@
 
         statusBadge.textContent = isMaint ? 'MAINTENANCE' : 'AKTIF';
         note.textContent = isMaint
-          ? 'Status berhasil diubah ke MAINTENANCE. Web ZIKZ APP akan menampilkan layar perbaikan.'
-          : 'Status berhasil diubah ke NORMAL / AKTIF. Web ZIKZ APP bisa diakses kembali.';
+          ? 'Status BERHASIL diubah ke MAINTENANCE! Web ZIKZ APP sekarang menampilkan layar perbaikan.'
+          : 'Status BERHASIL diubah ke NORMAL / AKTIF! Web ZIKZ APP terbuka normal kembali.';
       } catch (err) {
         note.textContent = `Gagal menyimpan status: ${err.message}`;
       } finally {

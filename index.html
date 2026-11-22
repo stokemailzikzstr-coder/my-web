@@ -133,10 +133,10 @@
     .btn-fire { grid-column: 1 / -1; background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; box-shadow: 0 10px 24px rgba(255, 42, 66, 0.35); }
     .btn-fire:hover:not(:disabled) { filter: brightness(1.08); box-shadow: 0 12px 28px rgba(255, 65, 20, 0.5); }
     .btn-ember { background: #050507; color: #ff9c73; border: 1px solid var(--border-fire); }
-    .btn-dark { background: #050507; color: var(--text); border: 1px solid var(--border); }
+    .btn-dark { grid-column: 1 / -1; background: #050507; color: var(--text); border: 1px solid var(--border); }
     .btn-sm { padding: 0.42rem 0.72rem; font-size: 0.72rem; border-radius: 8px; }
 
-    .output-box, .publish-box {
+    .publish-box {
       margin-top: 1rem; padding: 1rem; border-radius: 12px; background: #050507; border: 1px solid rgba(255, 81, 0, 0.5);
     }
 
@@ -221,7 +221,6 @@
 
         <div class="actions">
           <button class="btn btn-fire" type="button" onclick="previewHTML()">Preview Website</button>
-          <button class="btn btn-ember" type="button" onclick="preparePage()">SIMPAN &amp; UBAH KE WEB</button>
           <button class="btn btn-dark" type="button" onclick="downloadHTML()">Download HTML</button>
         </div>
 
@@ -234,15 +233,6 @@
           <div id="published-link-actions" class="output-actions hidden">
             <button class="btn btn-dark btn-sm" type="button" onclick="copyPublishedUrl()">Salin Link</button>
             <button class="btn btn-ember btn-sm" type="button" onclick="openPublishedFresh()">Buka Tanpa Cache</button>
-          </div>
-        </div>
-
-        <div id="output-box" class="output-box hidden">
-          <div class="output-tag">Halaman Lokal</div>
-          <input type="text" id="local-label" readonly>
-          <div class="output-actions">
-            <button class="btn btn-dark" type="button" onclick="copyLabel()">Salin Label</button>
-            <button class="btn btn-fire" type="button" onclick="openBlobPage()">Buka Website</button>
           </div>
         </div>
       </section>
@@ -286,7 +276,6 @@
   </div>
 
   <script>
-    let activeBlobUrl = null;
     let lastPublishedUrl = '';
 
     function getRepoTarget() {
@@ -350,10 +339,6 @@
       iframe.srcdoc = '';
       iframe.classList.add('hidden');
       emptyBox.classList.remove('hidden');
-      if (activeBlobUrl) {
-        URL.revokeObjectURL(activeBlobUrl);
-        activeBlobUrl = null;
-      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -396,19 +381,6 @@
         .replace(/\.html?$/i, '')
         .replace(/[^a-z0-9-]/g, '');
       return clean || ('proyek-' + Math.floor(1000 + Math.random() * 9000));
-    }
-
-    function preparePage() {
-      const code = document.getElementById('html-code').value;
-      const rawName = document.getElementById('project-name').value.trim();
-      if (!code.trim()) return;
-
-      const slug = buildSlug(rawName);
-      document.getElementById('project-name').value = slug;
-      document.getElementById('local-label').value = `local://${slug}.html`;
-      document.getElementById('output-box').classList.remove('hidden');
-
-      previewHTML();
     }
 
     function toBase64Utf8(str) {
@@ -501,27 +473,6 @@
       }
     }
 
-    function copyLabel() {
-      const input = document.getElementById('local-label');
-      if (!input.value) return;
-      input.select();
-      input.setSelectionRange(0, 99999);
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(input.value).catch(() => document.execCommand('copy'));
-      } else {
-        document.execCommand('copy');
-      }
-    }
-
-    function openBlobPage() {
-      const code = document.getElementById('html-code').value;
-      if (!code.trim()) return;
-      if (activeBlobUrl) URL.revokeObjectURL(activeBlobUrl);
-      const blob = new Blob([code], { type: 'text/html' });
-      activeBlobUrl = URL.createObjectURL(blob);
-      window.open(activeBlobUrl, '_blank');
-    }
-
     function downloadHTML() {
       const code = document.getElementById('html-code').value;
       if (!code.trim()) return;
@@ -540,7 +491,6 @@
       document.getElementById('html-file').value = '';
       document.getElementById('project-name').value = '';
       resetPreview();
-      document.getElementById('output-box').classList.add('hidden');
       document.getElementById('published-link-actions').classList.add('hidden');
       document.getElementById('publish-status').textContent = '';
     }

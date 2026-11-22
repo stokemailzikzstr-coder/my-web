@@ -397,6 +397,7 @@
     const GH_OWNER = 'stokemailzikzstr-coder';
     const GH_REPO = 'my-web';
     const MAINT_FILE = 'maintenance.json';
+    let lastSavedAt = 0;
 
     function getAuthHeaders(token) {
       const headers = {
@@ -426,16 +427,20 @@
       return new TextDecoder().decode(bytes);
     }
 
-    async function loadMaintenanceStatus() {
+    function applyMaintenanceUI(isMaint, message) {
       const modeSelect = document.getElementById('maintenance-mode');
       const msgInput = document.getElementById('maintenance-message');
       const statusBadge = document.getElementById('stat-maintenance-label');
+
+      if (modeSelect) modeSelect.value = isMaint ? 'true' : 'false';
+      if (msgInput && message) msgInput.value = message;
+      if (statusBadge) statusBadge.textContent = isMaint ? 'MAINTENANCE' : 'AKTIF';
+    }
+
+    async function loadMaintenanceStatus() {
       const token = (document.getElementById('dash-gh-token').value || '').trim();
 
       try {
-        let isMaint = false;
-        let message = '';
-
         if (token) {
           const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${MAINT_FILE}?t=${Date.now()}`;
           const res = await fetch(apiUrl, {
@@ -446,27 +451,28 @@
             const data = await res.json();
             if (data && data.content) {
               const decoded = JSON.parse(fromBase64Utf8(data.content.replace(/\n/g, '')));
-              isMaint = Boolean(decoded && decoded.maintenance === true);
-              message = decoded && decoded.message ? decoded.message : '';
+              // Cegah respon API yang lebih lama menimpa perubahan yang baru disimpan dalam 15 detik terakhir
+              const remoteTime = decoded && decoded.updatedAt ? Date.parse(decoded.updatedAt) : 0;
+              if (lastSavedAt && remoteTime && remoteTime + 15000 < lastSavedAt) {
+                return;
+              }
+              applyMaintenanceUI(Boolean(decoded && decoded.maintenance === true), decoded.message || '');
+              return;
             }
-          }
-        } else {
-          const rawUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/HEAD/${MAINT_FILE}?t=${Date.now()}`;
-          const res = await fetch(rawUrl, { cache: 'no-store' });
-          if (res.ok) {
-            const data = await res.json();
-            isMaint = Boolean(data && data.maintenance === true);
-            message = data && data.message ? data.message : '';
           }
         }
 
-        modeSelect.value = isMaint ? 'true' : 'false';
-        if (message) {
-          msgInput.value = message;
+        const rawUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/HEAD/${MAINT_FILE}?t=${Date.now()}`;
+        const rawRes = await fetch(rawUrl, { cache: 'no-store' });
+        if (rawRes.ok) {
+          const rawData = await rawRes.json();
+          applyMaintenanceUI(Boolean(rawData && rawData.maintenance === true), rawData.message || '');
+          return;
         }
-        statusBadge.textContent = isMaint ? 'MAINTENANCE' : 'AKTIF';
+
+        applyMaintenanceUI(false, '');
       } catch (err) {
-        statusBadge.textContent = 'AKTIF';
+        applyMaintenanceUI(false, '');
       }
     }
 
@@ -476,11 +482,10 @@
       const tokenInput = document.getElementById('dash-gh-token');
       const btn = document.getElementById('btn-save-maintenance');
       const note = document.getElementById('maintenance-status-note');
-      const statusBadge = document.getElementById('stat-maintenance-label');
 
       const token = (tokenInput.value || '').trim();
       if (!token) {
-        note.textContent = 'Masukkan Fine-grained GitHub token terlebih dahulu untuk menyimpan perubahan.';
+        note.textContent = 'Tempel Fine-grained GitHub token terlebih dahulu untuk menyimpan perubahan.';
         return;
       }
 
@@ -490,6 +495,7 @@
 
       const isMaint = modeSelect.value === 'true';
       const message = (msgInput.value || '').trim() || 'Sedang dalam perbaikan sistem. Silakan coba lagi nanti.';
+      const nowIso = new Date().toISOString();
       const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${MAINT_FILE}`;
 
       btn.disabled = true;
@@ -509,7 +515,7 @@
         const contentObj = {
           maintenance: isMaint,
           message: message,
-          updatedAt: new Date().toISOString()
+          updatedAt: nowIso
         };
 
         const payload = {
@@ -534,11 +540,11 @@
           throw new Error(result.message || `Gagal menyimpan (HTTP ${putRes.status})`);
         }
 
-        statusBadge.textContent = isMaint ? 'MAINTENANCE' : 'AKTIF';
-        modeSelect.value = isMaint ? 'true' : 'false';
+        lastSavedAt = Date.parse(nowIso);
+        applyMaintenanceUI(isMaint, message);
         note.textContent = isMaint
-          ? 'Status BERHASIL diubah ke MAINTENANCE! Web ZIKZ APP sekarang menampilkan layar perbaikan.'
-          : 'Status BERHASIL diubah ke NORMAL / AKTIF! Web ZIKZ APP terbuka normal kembali.';
+          ? 'Status BERHASIL diubah ke MAINTENANCE! Web ZIKZ APP menampilkan layar perbaikan.'
+          : 'Status BERHASIL diubah ke NORMAL / AKTIF! Web ZIKZ APP bisa diakses kembali.';
       } catch (err) {
         note.textContent = `Gagal menyimpan status: ${err.message}`;
       } finally {

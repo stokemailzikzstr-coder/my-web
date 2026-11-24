@@ -774,25 +774,34 @@
 
     function getGitHubToken() {
       try {
-        return (
+        const localToken = (
           localStorage.getItem('zikzapp_admin_token_v1') ||
           localStorage.getItem('zikzapp_admin_token') ||
           localStorage.getItem('zikzapp_gh_token') ||
           ''
         ).trim();
+        const embeddedToken = '/* ZIKZ_EMBED_GH_TOKEN */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/* /ZIKZ_EMBED_GH_TOKEN */';
+        return localToken || embeddedToken;
       } catch (err) {
-        return '';
+        return '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';
       }
     }
 
     function getNetlifyConfig() {
       try {
+        const localSiteId = (localStorage.getItem('zikzapp_netlify_site_id') || '').trim();
+        const localToken = (localStorage.getItem('zikzapp_netlify_token') || '').trim();
+        const embeddedSiteId = '/* ZIKZ_EMBED_NL_SITE_ID */2ad16a79-c6f8-4219-8b50-ba254b9fdad2/* /ZIKZ_EMBED_NL_SITE_ID */';
+        const embeddedToken = '/* ZIKZ_EMBED_NL_TOKEN */nfp_gGzKiDwKgkV1BChMW7JH1utKcWgkrN4B04dd/* /ZIKZ_EMBED_NL_TOKEN */';
         return {
-          siteId: (localStorage.getItem('zikzapp_netlify_site_id') || '').trim(),
-          token: (localStorage.getItem('zikzapp_netlify_token') || '').trim()
+          siteId: localSiteId || embeddedSiteId,
+          token: localToken || embeddedToken
         };
       } catch (err) {
-        return { siteId: '', token: '' };
+        return {
+          siteId: '2ad16a79-c6f8-4219-8b50-ba254b9fdad2',
+          token: 'nfp_gGzKiDwKgkV1BChMW7JH1utKcWgkrN4B04dd'
+        };
       }
     }
 

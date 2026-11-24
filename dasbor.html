@@ -243,12 +243,12 @@
       <div id="status-maint" class="status"></div>
     </section>
 
-    <!-- TOKEN GITHUB -->
+    <!-- TOKEN GITHUB (SERVER 1) -->
     <section class="panel">
       <div class="panel-head">
         <div class="panel-title">
           <span class="accent-bar"></span>
-          <span>TOKEN GITHUB</span>
+          <span>TOKEN GITHUB (SERVER 1)</span>
         </div>
       </div>
 
@@ -262,6 +262,32 @@
         <button class="btn btn-dark" type="button" onclick="clearGitHub()">Hapus Token</button>
       </div>
       <div id="status-gh" class="status"></div>
+    </section>
+
+    <!-- NETLIFY API (SERVER 2) -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <span class="accent-bar"></span>
+          <span>NETLIFY API (SERVER 2)</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="dash-netlify-site-id">Site ID Netlify</label>
+        <input type="text" id="dash-netlify-site-id" placeholder="Contoh: a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="dash-netlify-token">Personal Access Token Netlify</label>
+        <input type="password" id="dash-netlify-token" placeholder="Tempel token Netlify...">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-fire" type="button" onclick="saveNetlify()">Simpan Netlify</button>
+        <button class="btn btn-dark" type="button" onclick="clearNetlify()">Hapus Netlify</button>
+      </div>
+      <div id="status-netlify" class="status"></div>
     </section>
   </div>
 
@@ -386,6 +412,14 @@
           document.getElementById('status-gh').textContent = 'Token GitHub tersimpan di browser ini.';
         }
 
+        const nlSite = (localStorage.getItem('zikzapp_netlify_site_id') || '').trim();
+        const nlToken = (localStorage.getItem('zikzapp_netlify_token') || '').trim();
+        if (nlSite) document.getElementById('dash-netlify-site-id').value = nlSite;
+        if (nlToken) document.getElementById('dash-netlify-token').value = nlToken;
+        if (nlSite || nlToken) {
+          document.getElementById('status-netlify').textContent = 'Konfigurasi Netlify tersimpan di browser ini.';
+        }
+
         const rawIntro = localStorage.getItem('zikzapp_phone_intro_v1');
         if (rawIntro) {
           const cfg = JSON.parse(rawIntro);
@@ -430,6 +464,32 @@
         localStorage.removeItem('zikzapp_gh_token');
         document.getElementById('dash-gh-token').value = '';
         document.getElementById('status-gh').textContent = 'Token GitHub dihapus dari browser.';
+      } catch (err) {}
+    }
+
+    function saveNetlify() {
+      const siteId = (document.getElementById('dash-netlify-site-id').value || '').trim();
+      const token = (document.getElementById('dash-netlify-token').value || '').trim();
+      if (!siteId || !token) {
+        document.getElementById('status-netlify').textContent = 'Isi Site ID dan Token Netlify terlebih dahulu.';
+        return;
+      }
+      try {
+        localStorage.setItem('zikzapp_netlify_site_id', siteId);
+        localStorage.setItem('zikzapp_netlify_token', token);
+        document.getElementById('status-netlify').textContent = 'Site ID & Token Netlify berhasil disimpan di browser.';
+      } catch (err) {
+        document.getElementById('status-netlify').textContent = 'Gagal menyimpan konfigurasi Netlify.';
+      }
+    }
+
+    function clearNetlify() {
+      try {
+        localStorage.removeItem('zikzapp_netlify_site_id');
+        localStorage.removeItem('zikzapp_netlify_token');
+        document.getElementById('dash-netlify-site-id').value = '';
+        document.getElementById('dash-netlify-token').value = '';
+        document.getElementById('status-netlify').textContent = 'Konfigurasi Netlify dihapus dari browser.';
       } catch (err) {}
     }
 

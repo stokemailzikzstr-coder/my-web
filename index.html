@@ -556,12 +556,12 @@
   <main id="screen-server-select" class="server-select-screen">
     <div class="esports-server-btn" onclick="enterServer(1)">
       <span class="esports-server-label">SERVER 1</span>
-      <span class="esports-server-tag">NODE 01</span>
+      <span class="esports-server-tag">GITHUB</span>
     </div>
 
     <div class="esports-server-btn" onclick="enterServer(2)">
       <span class="esports-server-label">SERVER 2</span>
-      <span class="esports-server-tag">NODE 02</span>
+      <span class="esports-server-tag">NETLIFY</span>
     </div>
   </main>
 
@@ -576,7 +576,7 @@
         </div>
 
         <div class="server-banner">
-          <span class="server-banner-text" id="active-server-name">SERVER 1</span>
+          <span class="server-banner-text" id="active-server-name">SERVER 1 (GITHUB)</span>
           <button type="button" class="btn btn-dark btn-sm" onclick="backToSelectServer()">Ganti Server</button>
         </div>
 
@@ -609,7 +609,7 @@
           <button class="btn btn-fire" id="btn-create-web" type="button" onclick="createWebsite()">
             BUAT WEB NYA
           </button>
-          <div id="publish-status" class="publish-status">Server aktif: SERVER 1</div>
+          <div id="publish-status" class="publish-status">Server aktif: SERVER 1 (GITHUB)</div>
           <div id="published-link-actions" class="output-actions hidden">
             <button class="btn btn-dark" type="button" onclick="copyPublishedUrl()">Salin Link</button>
             <button class="btn btn-ember" type="button" onclick="openPublishedFresh()">Buka Tanpa Cache</button>
@@ -656,6 +656,7 @@
   </div>
 
   <script>
+    let activeServer = 1;
     let lastPublishedUrl = '';
 
     const DEFAULT_INTRO = {
@@ -748,7 +749,12 @@
       } catch (err) {}
     }
 
+    function getServerLabel() {
+      return activeServer === 2 ? 'SERVER 2 (NETLIFY)' : 'SERVER 1 (GITHUB)';
+    }
+
     function enterServer(serverNum) {
+      activeServer = serverNum === 2 ? 2 : 1;
       const selectScreen = document.getElementById('screen-server-select');
       const studioScreen = document.getElementById('screen-studio');
       const activeServerText = document.getElementById('active-server-name');
@@ -757,10 +763,8 @@
       selectScreen.classList.add('hidden');
       studioScreen.classList.remove('hidden');
 
-      activeServerText.textContent = 'SERVER 1';
-      publishStatus.textContent = serverNum === 2
-        ? 'Dialihkan ke SERVER 1'
-        : 'Server aktif: SERVER 1';
+      activeServerText.textContent = getServerLabel();
+      publishStatus.textContent = `Server aktif: ${getServerLabel()}`;
     }
 
     function backToSelectServer() {
@@ -778,6 +782,17 @@
         ).trim();
       } catch (err) {
         return '';
+      }
+    }
+
+    function getNetlifyConfig() {
+      try {
+        return {
+          siteId: (localStorage.getItem('zikzapp_netlify_site_id') || '').trim(),
+          token: (localStorage.getItem('zikzapp_netlify_token') || '').trim()
+        };
+      } catch (err) {
+        return { siteId: '', token: '' };
       }
     }
 
@@ -863,6 +878,94 @@
       return btoa(binary);
     }
 
+    async function publishToGitHub(code, fileName, statusEl) {
+      const token = getGitHubToken();
+      if (!token) {
+        statusEl.innerHTML = 'Token GitHub belum tersimpan. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk menyimpan token.';
+        return null;
+      }
+
+      const { fullSlug, pagesBase } = getRepoTarget();
+      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${fileName}`;
+
+      let sha = null;
+      const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+        cache: 'no-store'
+      });
+
+      if (checkRes.ok) {
+        const existingData = await checkRes.json();
+        sha = existingData.sha;
+        if (!confirm(`Timpa "${fileName}" di ${fullSlug}?`)) {
+          statusEl.textContent = 'Dibatalkan.';
+          return null;
+        }
+      }
+
+      const payload = { message: `Publish ${fileName} via ZIKZ APP`, content: toBase64Utf8(code) };
+      if (sha) payload.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await putRes.json();
+      if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
+
+      return `${pagesBase}/${fileName}`;
+    }
+
+    async function publishToNetlify(code, fileName, statusEl) {
+      const { siteId, token } = getNetlifyConfig();
+      if (!siteId || !token) {
+        statusEl.innerHTML = 'Site ID atau Token Netlify belum tersimpan. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk mengisi NETLIFY API (SERVER 2).';
+        return null;
+      }
+
+      const uploadUrl = `https://api.netlify.com/api/v1/sites/${encodeURIComponent(siteId)}/files/${encodeURIComponent(fileName)}`;
+      const putRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/octet-stream'
+        },
+        body: new TextEncoder().encode(code)
+      });
+
+      if (!putRes.ok) {
+        let errMsg = `HTTP ${putRes.status}`;
+        try {
+          const errJson = await putRes.json();
+          if (errJson && errJson.message) errMsg = errJson.message;
+        } catch (e) {}
+        throw new Error(errMsg);
+      }
+
+      let siteUrl = '';
+      try {
+        const siteRes = await fetch(`https://api.netlify.com/api/v1/sites/${encodeURIComponent(siteId)}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (siteRes.ok) {
+          const siteData = await siteRes.json();
+          siteUrl = (siteData.ssl_url || siteData.url || '').replace(/\/+$/, '');
+        }
+      } catch (e) {}
+
+      if (!siteUrl) {
+        siteUrl = `https://${siteId}.netlify.app`;
+      }
+
+      return `${siteUrl}/${fileName}`;
+    }
+
     async function createWebsite() {
       const code = document.getElementById('html-code').value;
       const statusEl = document.getElementById('publish-status');
@@ -875,59 +978,24 @@
         return;
       }
 
-      const token = getGitHubToken();
-      if (!token) {
-        statusEl.innerHTML = 'Token belum tersimpan. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk menyimpan token.';
-        return;
-      }
-
       btn.disabled = true;
       linkActions.classList.add('hidden');
-      statusEl.textContent = 'Membuat web di SERVER 1...';
+      statusEl.textContent = `Membuat web di ${getServerLabel()}...`;
 
       try {
         const slug = buildSlug(rawName);
         const fileName = `${slug}.html`;
-        const { fullSlug, pagesBase } = getRepoTarget();
-        const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${fileName}`;
+        const publishedUrl = activeServer === 2
+          ? await publishToNetlify(code, fileName, statusEl)
+          : await publishToGitHub(code, fileName, statusEl);
 
-        let sha = null;
-        const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-          cache: 'no-store'
-        });
+        if (!publishedUrl) return;
 
-        if (checkRes.ok) {
-          const existingData = await checkRes.json();
-          sha = existingData.sha;
-          if (!confirm(`Timpa "${fileName}" di ${fullSlug}?`)) {
-            statusEl.textContent = 'Dibatalkan.';
-            btn.disabled = false;
-            return;
-          }
-        }
-
-        const payload = { message: `Publish ${fileName} via ZIKZ APP`, content: toBase64Utf8(code) };
-        if (sha) payload.sha = sha;
-
-        const putRes = await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/vnd.github+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await putRes.json();
-        if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
-
-        lastPublishedUrl = `${pagesBase}/${fileName}`;
+        lastPublishedUrl = publishedUrl;
         linkActions.classList.remove('hidden');
-        statusEl.innerHTML = `Berhasil dibuat di <strong>SERVER 1</strong>: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
+        statusEl.innerHTML = `Berhasil dibuat di <strong>${getServerLabel()}</strong>: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
       } catch (err) {
-        statusEl.textContent = `Gagal: ${err.message}`;
+        statusEl.textContent = `Gagal (${getServerLabel()}): ${err.message}`;
       } finally {
         btn.disabled = false;
       }
@@ -965,7 +1033,7 @@
       document.getElementById('project-name').value = '';
       resetPreview();
       document.getElementById('published-link-actions').classList.add('hidden');
-      document.getElementById('publish-status').textContent = 'Server aktif: SERVER 1';
+      document.getElementById('publish-status').textContent = `Server aktif: ${getServerLabel()}`;
     }
   </script>
 </body>

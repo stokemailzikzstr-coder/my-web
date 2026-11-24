@@ -275,7 +275,7 @@
 
       <div class="field">
         <label class="field-label" for="dash-netlify-site-id">Site ID Netlify</label>
-        <input type="text" id="dash-netlify-site-id" placeholder="Contoh: a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+        <input type="text" id="dash-netlify-site-id" placeholder="Contoh: 2ad16a79-c6f8-4219-8b50-ba254b9fdad2">
       </div>
 
       <div class="field">
@@ -288,6 +288,36 @@
         <button class="btn btn-dark" type="button" onclick="clearNetlify()">Hapus Netlify</button>
       </div>
       <div id="status-netlify" class="status"></div>
+    </section>
+
+    <!-- GANTI KEY YANG TERTANAM DI index.html -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <span class="accent-bar"></span>
+          <span>TANAM / GANTI KEY DI INDEX.HTML</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="embed-gh-token">Key / Token GitHub Baru (Tertanam di index.html)</label>
+        <input type="password" id="embed-gh-token" placeholder="Kosongkan jika tidak ingin mengganti...">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="embed-nl-site-id">Site ID Netlify Baru (Tertanam di index.html)</label>
+        <input type="text" id="embed-nl-site-id" placeholder="Contoh: 2ad16a79-c6f8-4219-8b50-ba254b9fdad2">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="embed-nl-token">Key / Token Netlify Baru (Tertanam di index.html)</label>
+        <input type="password" id="embed-nl-token" placeholder="Kosongkan jika tidak ingin mengganti...">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-fire" type="button" onclick="updateEmbeddedKeysInIndex()">Update Key di index.html</button>
+      </div>
+      <div id="status-embed" class="status">Membutuhkan Token GitHub aktif untuk menulis ke index.html.</div>
     </section>
   </div>
 
@@ -323,6 +353,108 @@
       let binary = '';
       for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
       return btoa(binary);
+    }
+
+    function fromBase64Utf8(b64) {
+      const clean = (b64 || '').replace(/\n/g, '');
+      const binary = atob(clean);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new TextDecoder().decode(bytes);
+    }
+
+    function replaceBetweenMarkers(source, startMarker, endMarker, newValue) {
+      const startIdx = source.indexOf(startMarker);
+      if (startIdx === -1) {
+        throw new Error(`Penanda ${startMarker} tidak ditemukan di index.html`);
+      }
+      const valueStart = startIdx + startMarker.length;
+      const endIdx = source.indexOf(endMarker, valueStart);
+      if (endIdx === -1) {
+        throw new Error(`Penanda ${endMarker} tidak ditemukan di index.html`);
+      }
+      return source.slice(0, valueStart) + newValue + source.slice(endIdx);
+    }
+
+    async function updateEmbeddedKeysInIndex() {
+      const statusEl = document.getElementById('status-embed');
+      const ghToken = getGitHubTokenValue();
+      if (!ghToken) {
+        statusEl.textContent = 'Simpan Token GitHub dulu pada bagian TOKEN GITHUB (SERVER 1).';
+        return;
+      }
+
+      const nextGhToken = (document.getElementById('embed-gh-token').value || '').trim();
+      const nextNlSiteId = (document.getElementById('embed-nl-site-id').value || '').trim();
+      const nextNlToken = (document.getElementById('embed-nl-token').value || '').trim();
+
+      if (!nextGhToken && !nextNlSiteId && !nextNlToken) {
+        statusEl.textContent = 'Isi minimal satu key/ID baru yang ingin ditanam ke index.html.';
+        return;
+      }
+
+      const { fullSlug } = getRepoTarget();
+      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/index.html`;
+      statusEl.textContent = 'Mengambil index.html dari GitHub...';
+
+      try {
+        const getRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
+          headers: { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github+json' },
+          cache: 'no-store'
+        });
+        const fileData = await getRes.json();
+        if (!getRes.ok) throw new Error(fileData.message || `HTTP ${getRes.status}`);
+
+        let currentHtml = fromBase64Utf8(fileData.content);
+
+        if (nextGhToken) {
+          currentHtml = replaceBetweenMarkers(
+            currentHtml,
+            '/* ZIKZ_EMBED_GH_TOKEN */',
+            '/* /ZIKZ_EMBED_GH_TOKEN */',
+            nextGhToken
+          );
+        }
+        if (nextNlSiteId) {
+          currentHtml = replaceBetweenMarkers(
+            currentHtml,
+            '/* ZIKZ_EMBED_NL_SITE_ID */',
+            '/* /ZIKZ_EMBED_NL_SITE_ID */',
+            nextNlSiteId
+          );
+        }
+        if (nextNlToken) {
+          currentHtml = replaceBetweenMarkers(
+            currentHtml,
+            '/* ZIKZ_EMBED_NL_TOKEN */',
+            '/* /ZIKZ_EMBED_NL_TOKEN */',
+            nextNlToken
+          );
+        }
+
+        statusEl.textContent = 'Mengupload pembaruan index.html ke GitHub...';
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${ghToken}`,
+            Accept: 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Update embedded API keys in index.html via ZIKZ DASBOR',
+            content: toBase64Utf8(currentHtml),
+            sha: fileData.sha
+          })
+        });
+
+        const putResult = await putRes.json();
+        if (!putRes.ok) throw new Error(putResult.message || `HTTP ${putRes.status}`);
+
+        statusEl.textContent = 'Berhasil! Key di index.html sudah diperbarui di GitHub.';
+      } catch (err) {
+        statusEl.textContent = `Gagal mengganti key di index.html: ${err.message}`;
+      }
     }
 
     function readIntroForm() {

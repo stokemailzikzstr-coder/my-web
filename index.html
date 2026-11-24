@@ -89,6 +89,47 @@
 
     .accent-bar { width: 4px; height: 16px; border-radius: 99px; background: linear-gradient(180deg, var(--fire-1), var(--fire-2)); }
 
+    .server-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .server-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.8rem 0.75rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+    }
+
+    .server-card.active {
+      color: #fff;
+      border-color: var(--fire-1);
+      box-shadow: 0 0 0 2px rgba(255, 81, 0, 0.28);
+      background: rgba(255, 81, 0, 0.1);
+    }
+
+    .server-card-title {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .server-card-sub {
+      display: block;
+      font-size: 0.72rem;
+      color: #ff9e75;
+      margin-top: 0.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
     .field { margin-bottom: 1rem; }
 
     .field-label {
@@ -138,11 +179,6 @@
 
     .publish-box {
       margin-top: 1rem; padding: 1rem; border-radius: 12px; background: #050507; border: 1px solid rgba(255, 81, 0, 0.5);
-    }
-
-    .output-tag {
-      font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: #ff9c73;
-      margin-bottom: 0.6rem;
     }
 
     .output-actions { display: flex; gap: 0.6rem; margin-top: 0.65rem; flex-wrap: wrap; }
@@ -195,8 +231,19 @@
         <div class="panel-head">
           <div class="panel-title">
             <span class="accent-bar"></span>
-            <span>INPUT &amp; KODE HTML</span>
+            <span>PILIH SERVER &amp; INPUT HTML</span>
           </div>
+        </div>
+
+        <div class="server-switch">
+          <button type="button" class="server-card active" id="btn-srv-github" onclick="selectServer('github')">
+            <span class="server-card-title">SERVER 1</span>
+            <span class="server-card-sub">GITHUB</span>
+          </button>
+          <button type="button" class="server-card" id="btn-srv-netlify" onclick="selectServer('netlify')">
+            <span class="server-card-title">SERVER 2</span>
+            <span class="server-card-sub">NETLIFY</span>
+          </button>
         </div>
 
         <div class="field">
@@ -225,11 +272,10 @@
         </div>
 
         <div class="publish-box">
-          <div class="output-tag">Publish Ke GitHub Pages</div>
-          <button class="btn btn-fire" id="btn-publish-gh" type="button" onclick="publishToGitHub()">
-            Publish Otomatis Ke Link Publik
+          <button class="btn btn-fire" id="btn-create-web" type="button" onclick="createWebsite()">
+            BUAT WEB NYA
           </button>
-          <div id="publish-status" class="publish-status"></div>
+          <div id="publish-status" class="publish-status">Server aktif: SERVER 1 (GITHUB)</div>
           <div id="published-link-actions" class="output-actions hidden">
             <button class="btn btn-dark btn-sm" type="button" onclick="copyPublishedUrl()">Salin Link</button>
             <button class="btn btn-ember btn-sm" type="button" onclick="openPublishedFresh()">Buka Tanpa Cache</button>
@@ -276,7 +322,42 @@
   </div>
 
   <script>
+    let currentServer = 'github';
     let lastPublishedUrl = '';
+
+    function selectServer(serverName) {
+      currentServer = serverName === 'netlify' ? 'netlify' : 'github';
+      document.getElementById('btn-srv-github').classList.toggle('active', currentServer === 'github');
+      document.getElementById('btn-srv-netlify').classList.toggle('active', currentServer === 'netlify');
+      document.getElementById('publish-status').textContent = currentServer === 'github'
+        ? 'Server aktif: SERVER 1 (GITHUB)'
+        : 'Server aktif: SERVER 2 (NETLIFY)';
+      try { localStorage.setItem('zikzapp_active_server', currentServer); } catch (err) {}
+    }
+
+    function getGitHubToken() {
+      try {
+        return (
+          localStorage.getItem('zikzapp_admin_token_v1') ||
+          localStorage.getItem('zikzapp_admin_token') ||
+          localStorage.getItem('zikzapp_gh_token') ||
+          ''
+        ).trim();
+      } catch (err) {
+        return '';
+      }
+    }
+
+    function getNetlifyConfig() {
+      try {
+        return {
+          token: (localStorage.getItem('zikzapp_nf_token') || '').trim(),
+          siteId: (localStorage.getItem('zikzapp_nf_site_id') || '').trim()
+        };
+      } catch (err) {
+        return { token: '', siteId: '' };
+      }
+    }
 
     function getRepoTarget() {
       const host = window.location.hostname;
@@ -294,19 +375,6 @@
         : `https://${owner}.github.io/${repo}`;
 
       return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
-    }
-
-    function getAdminTokenFromStorage() {
-      try {
-        return (
-          localStorage.getItem('zikzapp_admin_token_v1') ||
-          localStorage.getItem('zikzapp_admin_token') ||
-          localStorage.getItem('zikzapp_gh_token') ||
-          ''
-        ).trim();
-      } catch (err) {
-        return '';
-      }
     }
 
     async function checkZikzMaintenance() {
@@ -347,6 +415,10 @@
         vid.muted = true;
         vid.play().catch(() => {});
       }
+      try {
+        const savedSrv = localStorage.getItem('zikzapp_active_server') || 'github';
+        selectServer(savedSrv);
+      } catch (err) {}
       checkZikzMaintenance();
     });
 
@@ -390,73 +462,153 @@
       return btoa(binary);
     }
 
-    async function publishToGitHub() {
+    async function sha1Hex(str) {
+      const buf = new TextEncoder().encode(str);
+      const hashBuf = await crypto.subtle.digest('SHA-1', buf);
+      return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function deployToGitHub(code, slug) {
+      const token = getGitHubToken();
+      if (!token) {
+        throw new Error('Token GitHub belum tersimpan. Buka dasborzikzapp.html untuk menyimpan token GitHub.');
+      }
+
+      const fileName = `${slug}.html`;
+      const { fullSlug, pagesBase } = getRepoTarget();
+      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${fileName}`;
+
+      let sha = null;
+      const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+        cache: 'no-store'
+      });
+
+      if (checkRes.ok) {
+        const existingData = await checkRes.json();
+        sha = existingData.sha;
+        if (!confirm(`Timpa "${fileName}" di ${fullSlug}?`)) {
+          return null;
+        }
+      }
+
+      const payload = { message: `Publish ${fileName} via ZIKZ APP`, content: toBase64Utf8(code) };
+      if (sha) payload.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await putRes.json();
+      if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
+
+      return `${pagesBase}/${fileName}`;
+    }
+
+    async function deployToNetlify(code, slug) {
+      const { token, siteId: initialSiteId } = getNetlifyConfig();
+      if (!token) {
+        throw new Error('Token Netlify belum tersimpan. Buka dasborzikzapp.html untuk menyimpan token Netlify.');
+      }
+
+      let siteId = initialSiteId;
+      let siteUrl = '';
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
+      if (!siteId) {
+        const createRes = await fetch('https://api.netlify.com/api/v1/sites', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ name: `${slug}-${Math.floor(100 + Math.random() * 900)}` })
+        });
+        const createData = await createRes.json();
+        if (!createRes.ok) throw new Error(createData.message || `Gagal buat site Netlify (HTTP ${createRes.status})`);
+        siteId = createData.id;
+        siteUrl = createData.ssl_url || createData.url || '';
+        try { localStorage.setItem('zikzapp_nf_site_id', siteId); } catch (err) {}
+      } else {
+        const siteRes = await fetch(`https://api.netlify.com/api/v1/sites/${siteId}`, { headers });
+        const siteData = await siteRes.json();
+        if (!siteRes.ok) throw new Error(siteData.message || `Site ID tidak valid (HTTP ${siteRes.status})`);
+        siteUrl = siteData.ssl_url || siteData.url || '';
+      }
+
+      const fileHash = await sha1Hex(code);
+      const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          files: {
+            '/index.html': fileHash
+          }
+        })
+      });
+      const deployData = await deployRes.json();
+      if (!deployRes.ok) throw new Error(deployData.message || `Gagal membuat deploy (HTTP ${deployRes.status})`);
+
+      const deployId = deployData.id;
+      const required = Array.isArray(deployData.required) ? deployData.required : [];
+      if (required.includes(fileHash)) {
+        const uploadRes = await fetch(`https://api.netlify.com/api/v1/deploys/${deployId}/files/index.html`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/octet-stream'
+          },
+          body: code
+        });
+        if (!uploadRes.ok) throw new Error(`Gagal mengunggah file ke Netlify (HTTP ${uploadRes.status})`);
+      }
+
+      return siteUrl || deployData.ssl_url || deployData.deploy_ssl_url || `https://${siteId}.netlify.app`;
+    }
+
+    async function createWebsite() {
       const code = document.getElementById('html-code').value;
       const statusEl = document.getElementById('publish-status');
-      const btnPublish = document.getElementById('btn-publish-gh');
+      const btn = document.getElementById('btn-create-web');
       const linkActions = document.getElementById('published-link-actions');
       const rawName = document.getElementById('project-name').value.trim();
 
       if (!code.trim()) {
-        statusEl.textContent = 'Kode kosong.';
+        statusEl.textContent = 'Kode HTML masih kosong.';
         return;
       }
 
-      const token = getAdminTokenFromStorage();
-      if (!token) {
-        statusEl.innerHTML = 'Token admin belum tersimpan di browser ini. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk menyimpan token admin.';
-        return;
-      }
-
-      btnPublish.disabled = true;
+      btn.disabled = true;
       linkActions.classList.add('hidden');
-      statusEl.textContent = 'Menyiapkan publish...';
+      statusEl.textContent = currentServer === 'github'
+        ? 'Membuat web di SERVER 1 (GITHUB)...'
+        : 'Membuat web di SERVER 2 (NETLIFY)...';
 
       try {
         const slug = buildSlug(rawName);
-        const fileName = `${slug}.html`;
-        const { fullSlug, pagesBase } = getRepoTarget();
-        const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${fileName}`;
+        const url = currentServer === 'github'
+          ? await deployToGitHub(code, slug)
+          : await deployToNetlify(code, slug);
 
-        let sha = null;
-        const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-          cache: 'no-store'
-        });
-
-        if (checkRes.ok) {
-          const existingData = await checkRes.json();
-          sha = existingData.sha;
-          if (!confirm(`Timpa "${fileName}" di ${fullSlug}?`)) {
-            statusEl.textContent = 'Dibatalkan.';
-            btnPublish.disabled = false;
-            return;
-          }
+        if (!url) {
+          statusEl.textContent = 'Dibatalkan.';
+          return;
         }
 
-        const payload = { message: `Publish ${fileName} via ZIKZ APP`, content: toBase64Utf8(code) };
-        if (sha) payload.sha = sha;
-
-        const putRes = await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/vnd.github+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await putRes.json();
-        if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
-
-        lastPublishedUrl = `${pagesBase}/${fileName}`;
+        lastPublishedUrl = url;
         linkActions.classList.remove('hidden');
-        statusEl.innerHTML = `Berhasil: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
+        statusEl.innerHTML = `Berhasil dibuat di <strong>${currentServer === 'github' ? 'SERVER 1 (GITHUB)' : 'SERVER 2 (NETLIFY)'}</strong>: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
       } catch (err) {
         statusEl.textContent = `Gagal: ${err.message}`;
       } finally {
-        btnPublish.disabled = false;
+        btn.disabled = false;
       }
     }
 
@@ -492,7 +644,9 @@
       document.getElementById('project-name').value = '';
       resetPreview();
       document.getElementById('published-link-actions').classList.add('hidden');
-      document.getElementById('publish-status').textContent = '';
+      document.getElementById('publish-status').textContent = currentServer === 'github'
+        ? 'Server aktif: SERVER 1 (GITHUB)'
+        : 'Server aktif: SERVER 2 (NETLIFY)';
     }
   </script>
 </body>

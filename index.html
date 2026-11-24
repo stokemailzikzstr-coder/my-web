@@ -780,10 +780,10 @@
           localStorage.getItem('zikzapp_gh_token') ||
           ''
         ).trim();
-        const embeddedToken = '/* ZIKZ_EMBED_GH_TOKEN */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/* /ZIKZ_EMBED_GH_TOKEN */';
+        const embeddedToken = '/* ZIKZ_EMBED_GH_TOKEN */TOKEN_GITHUB_KAMU/* /ZIKZ_EMBED_GH_TOKEN */';
         return localToken || embeddedToken;
       } catch (err) {
-        return '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';
+        return 'TOKEN_GITHUB_KAMU';
       }
     }
 
@@ -791,8 +791,8 @@
       try {
         const localSiteId = (localStorage.getItem('zikzapp_netlify_site_id') || '').trim();
         const localToken = (localStorage.getItem('zikzapp_netlify_token') || '').trim();
-        const embeddedSiteId = '/* ZIKZ_EMBED_NL_SITE_ID */6c725567-aedf-414f-ac33-0f0166252b9f/* /ZIKZ_EMBED_NL_SITE_ID */';
-        const embeddedToken = '/* ZIKZ_EMBED_NL_TOKEN */nfp_g2DDTv3zrkifRNsrns72boivyQ5Sefkd9686/* /ZIKZ_EMBED_NL_TOKEN */';
+        const embeddedSiteId = '/* ZIKZ_EMBED_NL_SITE_ID */2ad16a79-c6f8-4219-8b50-ba254b9fdad2/* /ZIKZ_EMBED_NL_SITE_ID */';
+        const embeddedToken = '/* ZIKZ_EMBED_NL_TOKEN */TOKEN_NETLIFY_KAMU/* /ZIKZ_EMBED_NL_TOKEN */';
         return {
           siteId: localSiteId || embeddedSiteId,
           token: localToken || embeddedToken
@@ -800,7 +800,7 @@
       } catch (err) {
         return {
           siteId: '2ad16a79-c6f8-4219-8b50-ba254b9fdad2',
-          token: 'nfp_gGzKiDwKgkV1BChMW7JH1utKcWgkrN4B04dd'
+          token: 'TOKEN_NETLIFY_KAMU'
         };
       }
     }
@@ -931,6 +931,80 @@
       return `${pagesBase}/${fileName}`;
     }
 
+    function crc32Bytes(bytes) {
+      let crc = 0xffffffff;
+      for (let i = 0; i < bytes.length; i++) {
+        crc ^= bytes[i];
+        for (let j = 0; j < 8; j++) {
+          crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+        }
+      }
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    function buildSingleFileZip(fileName, contentStr) {
+      const encoder = new TextEncoder();
+      const nameBytes = encoder.encode(fileName);
+      const dataBytes = encoder.encode(contentStr);
+      const crc = crc32Bytes(dataBytes);
+      const size = dataBytes.length;
+
+      const localHeader = new Uint8Array(30 + nameBytes.length);
+      const lv = new DataView(localHeader.buffer);
+      lv.setUint32(0, 0x04034b50, true);
+      lv.setUint16(4, 20, true);
+      lv.setUint16(6, 0x0800, true);
+      lv.setUint16(8, 0, true);
+      lv.setUint16(10, 0, true);
+      lv.setUint16(12, 0, true);
+      lv.setUint32(14, crc, true);
+      lv.setUint32(18, size, true);
+      lv.setUint32(22, size, true);
+      lv.setUint16(26, nameBytes.length, true);
+      lv.setUint16(28, 0, true);
+      localHeader.set(nameBytes, 30);
+
+      const cdOffset = localHeader.length + dataBytes.length;
+      const centralHeader = new Uint8Array(46 + nameBytes.length);
+      const cv = new DataView(centralHeader.buffer);
+      cv.setUint32(0, 0x02014b50, true);
+      cv.setUint16(4, 20, true);
+      cv.setUint16(6, 20, true);
+      cv.setUint16(8, 0x0800, true);
+      cv.setUint16(10, 0, true);
+      cv.setUint16(12, 0, true);
+      cv.setUint16(14, 0, true);
+      cv.setUint32(16, crc, true);
+      cv.setUint32(20, size, true);
+      cv.setUint32(24, size, true);
+      cv.setUint16(28, nameBytes.length, true);
+      cv.setUint16(30, 0, true);
+      cv.setUint16(32, 0, true);
+      cv.setUint16(34, 0, true);
+      cv.setUint16(36, 0, true);
+      cv.setUint32(38, 0, true);
+      cv.setUint32(42, 0, true);
+      centralHeader.set(nameBytes, 46);
+
+      const eocd = new Uint8Array(22);
+      const ev = new DataView(eocd.buffer);
+      ev.setUint32(0, 0x06054b50, true);
+      ev.setUint16(4, 0, true);
+      ev.setUint16(6, 0, true);
+      ev.setUint16(8, 1, true);
+      ev.setUint16(10, 1, true);
+      ev.setUint32(12, centralHeader.length, true);
+      ev.setUint32(16, cdOffset, true);
+      ev.setUint16(20, 0, true);
+
+      const zipBytes = new Uint8Array(localHeader.length + dataBytes.length + centralHeader.length + eocd.length);
+      zipBytes.set(localHeader, 0);
+      zipBytes.set(dataBytes, localHeader.length);
+      zipBytes.set(centralHeader, localHeader.length + dataBytes.length);
+      zipBytes.set(eocd, localHeader.length + dataBytes.length + centralHeader.length);
+      return zipBytes;
+    }
+
     async function publishToNetlify(code, fileName, statusEl) {
       const { siteId, token } = getNetlifyConfig();
       if (!siteId || !token) {
@@ -938,41 +1012,25 @@
         return null;
       }
 
-      const uploadUrl = `https://api.netlify.com/api/v1/sites/${encodeURIComponent(siteId)}/files/${encodeURIComponent(fileName)}`;
-      const putRes = await fetch(uploadUrl, {
-        method: 'PUT',
+      const zipBytes = buildSingleFileZip(fileName, code);
+      const deployUrl = `https://api.netlify.com/api/v1/sites/${encodeURIComponent(siteId)}/deploys`;
+
+      const res = await fetch(deployUrl, {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/octet-stream'
+          'Content-Type': 'application/zip'
         },
-        body: new TextEncoder().encode(code)
+        body: zipBytes
       });
 
-      if (!putRes.ok) {
-        let errMsg = `HTTP ${putRes.status}`;
-        try {
-          const errJson = await putRes.json();
-          if (errJson && errJson.message) errMsg = errJson.message;
-        } catch (e) {}
-        throw new Error(errMsg);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || `HTTP ${res.status}`);
       }
 
-      let siteUrl = '';
-      try {
-        const siteRes = await fetch(`https://api.netlify.com/api/v1/sites/${encodeURIComponent(siteId)}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (siteRes.ok) {
-          const siteData = await siteRes.json();
-          siteUrl = (siteData.ssl_url || siteData.url || '').replace(/\/+$/, '');
-        }
-      } catch (e) {}
-
-      if (!siteUrl) {
-        siteUrl = `https://${siteId}.netlify.app`;
-      }
-
-      return `${siteUrl}/${fileName}`;
+      const baseUrl = (data.ssl_url || data.url || `https://${siteId}.netlify.app`).replace(/\/+$/, '');
+      return `${baseUrl}/${fileName}`;
     }
 
     async function createWebsite() {

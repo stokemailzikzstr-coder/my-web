@@ -203,10 +203,6 @@
       border-left: 3px solid var(--fire-1);
     }
 
-    .phone-lead strong {
-      color: var(--gold);
-    }
-
     .phone-feature-list {
       width: 100%;
       display: flex;
@@ -506,25 +502,25 @@
         <h2 class="phone-heading" id="intro-heading-text">SELAMAT DATANG DI ZIKZ APP</h2>
 
         <div class="phone-lead" id="intro-lead-text">
-          Ubah kode <strong>HTML, CSS &amp; JS</strong> menjadi halaman web siap pratinjau dan siap terbit.
+          Ubah kode HTML, CSS &amp; JS menjadi halaman web siap pratinjau dan siap terbit.
         </div>
 
         <div class="phone-feature-list">
           <div class="phone-feature-item">
-            <span class="phone-feature-num">01</span>
-            <span>Upload file <strong>.html / .htm</strong> atau tulis kode langsung</span>
+            <span class="phone-feature-num" id="intro-num-1">01</span>
+            <span id="intro-item-1">Upload file .html / .htm atau tulis kode langsung</span>
           </div>
           <div class="phone-feature-item">
-            <span class="phone-feature-num">02</span>
-            <span>Cek <strong>Live Preview</strong> mode Full maupun HP</span>
+            <span class="phone-feature-num" id="intro-num-2">02</span>
+            <span id="intro-item-2">Cek Live Preview mode Full maupun HP</span>
           </div>
           <div class="phone-feature-item">
-            <span class="phone-feature-num">03</span>
-            <span><strong>Download HTML</strong> atau buat link web publik</span>
+            <span class="phone-feature-num" id="intro-num-3">03</span>
+            <span id="intro-item-3">Download HTML atau buat link web publik</span>
           </div>
           <div class="phone-feature-item">
-            <span class="phone-feature-num">04</span>
-            <span>Atur <strong>Maintenance</strong> &amp; intro dari dasbor</span>
+            <span class="phone-feature-num" id="intro-num-4">04</span>
+            <span id="intro-item-4">Atur Maintenance &amp; intro dari dasbor</span>
           </div>
         </div>
 
@@ -666,6 +662,11 @@
       enabled: true,
       chip: 'ZIKZ APP // INTRO',
       heading: 'SELAMAT DATANG DI ZIKZ APP',
+      lead: 'Ubah kode HTML, CSS & JS menjadi halaman web siap pratinjau dan siap terbit.',
+      num1: '01', item1: 'Upload file .html / .htm atau tulis kode langsung',
+      num2: '02', item2: 'Cek Live Preview mode Full maupun HP',
+      num3: '03', item3: 'Download HTML atau buat link web publik',
+      num4: '04', item4: 'Atur Maintenance & intro dari dasbor',
       body: 'Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.',
       buttonText: 'MASUK KE HALAMAN UTAMA ➔'
     };
@@ -682,6 +683,20 @@
 
       document.getElementById('intro-chip-text').textContent = data.chip || DEFAULT_INTRO.chip;
       document.getElementById('intro-heading-text').textContent = data.heading || DEFAULT_INTRO.heading;
+      document.getElementById('intro-lead-text').textContent = data.lead || DEFAULT_INTRO.lead;
+
+      document.getElementById('intro-num-1').textContent = data.num1 || DEFAULT_INTRO.num1;
+      document.getElementById('intro-item-1').textContent = data.item1 || DEFAULT_INTRO.item1;
+
+      document.getElementById('intro-num-2').textContent = data.num2 || DEFAULT_INTRO.num2;
+      document.getElementById('intro-item-2').textContent = data.item2 || DEFAULT_INTRO.item2;
+
+      document.getElementById('intro-num-3').textContent = data.num3 || DEFAULT_INTRO.num3;
+      document.getElementById('intro-item-3').textContent = data.item3 || DEFAULT_INTRO.item3;
+
+      document.getElementById('intro-num-4').textContent = data.num4 || DEFAULT_INTRO.num4;
+      document.getElementById('intro-item-4').textContent = data.item4 || DEFAULT_INTRO.item4;
+
       document.getElementById('intro-body-text').textContent = data.body || DEFAULT_INTRO.body;
       document.getElementById('intro-continue-btn').textContent = data.buttonText || DEFAULT_INTRO.buttonText;
       overlay.classList.remove('hidden');

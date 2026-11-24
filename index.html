@@ -5,20 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZIKZ APP // HTML TO WEB</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
     :root {
-      --bg: #050507;
-      --surface: rgba(12, 12, 18, 0.84);
-      --surface-elevated: rgba(8, 8, 13, 0.94);
-      --border: rgba(255, 255, 255, 0.13);
-      --border-fire: rgba(255, 92, 24, 0.55);
-      --text: #f9fafb;
-      --muted: #cbd5e1;
-      --fire-1: #ff5900;
+      --bg: #050508;
+      --card-bg: rgba(11, 11, 17, 0.9);
+      --input-bg: #07070c;
+      --border: rgba(255, 255, 255, 0.12);
+      --fire-1: #ff5500;
       --fire-2: #ff1e42;
-      --gold: #ffbe55;
-      --radius: 18px;
+      --gold: #ffbe3b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,12 +30,11 @@
     }
 
     .bg-base {
-      position: fixed; inset: 0;
+      position: fixed; inset: 0; z-index: -5;
       background:
-        radial-gradient(circle at 50% 0%, rgba(255, 89, 0, 0.22), transparent 55%),
-        radial-gradient(circle at 85% 75%, rgba(255, 30, 66, 0.14), transparent 50%),
-        #050507;
-      z-index: -5;
+        radial-gradient(ellipse 75% 45% at 50% 0%, rgba(255, 85, 0, 0.24), transparent 65%),
+        radial-gradient(circle at 15% 85%, rgba(255, 30, 66, 0.14), transparent 45%),
+        #050508;
     }
 
     #bg-video {
@@ -47,20 +44,247 @@
 
     .bg-scrim {
       position: fixed; inset: 0; z-index: -1; pointer-events: none;
-      background: linear-gradient(180deg, rgba(5, 5, 7, 0.35) 0%, rgba(5, 5, 7, 0.58) 100%);
+      background: linear-gradient(180deg, rgba(5, 5, 8, 0.35) 0%, rgba(5, 5, 8, 0.68) 100%);
     }
 
+    /* KOTAK BENTUK LAYAR HP DI AWAL MASUK */
+    .phone-intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9990;
+      background: rgba(3, 3, 6, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.9rem;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 344px;
+      height: auto;
+      min-height: 460px;
+      max-height: 90vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 85, 0, 0.2), transparent 58%),
+        linear-gradient(165deg, #171220 0%, #07070c 55%, #0c070c 100%);
+      border: 2px solid rgba(255, 110, 40, 0.65);
+      border-radius: 34px;
+      padding: 0.78rem 0.95rem 1rem;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.9),
+        0 0 36px rgba(255, 85, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.55rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-notch {
+      width: 104px;
+      height: 18px;
+      background: #040407;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      margin: 0 auto 0.55rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+    }
+
+    .phone-speaker {
+      width: 38px;
+      height: 3.5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .phone-camera {
+      width: 6.5px;
+      height: 6.5px;
+      border-radius: 50%;
+      background: rgba(255, 85, 0, 0.65);
+      box-shadow: 0 0 6px rgba(255, 85, 0, 0.6);
+    }
+
+    .phone-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .phone-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(255, 190, 59, 0.12);
+      border: 1px solid rgba(255, 190, 59, 0.35);
+      padding: 0.24rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .btn-skip-top {
+      appearance: none;
+      background: rgba(255, 85, 0, 0.14);
+      border: 1px solid rgba(255, 110, 40, 0.45);
+      color: #ffd0b5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.26rem 0.62rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .btn-skip-top:active { transform: scale(0.96); }
+
+    .phone-screen-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.58rem;
+      padding: 0.2rem 0.15rem;
+      overflow-y: auto;
+    }
+
+    .phone-logo-mini {
+      width: 62px;
+      height: 62px;
+      border-radius: 16px;
+      padding: 2px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--gold), var(--fire-1), var(--fire-2));
+      box-shadow: 0 0 20px rgba(255, 85, 0, 0.4);
+    }
+
+    .phone-logo-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+    }
+
+    .phone-heading {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      background: linear-gradient(110deg, #ffffff 0%, var(--gold) 45%, var(--fire-1) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .phone-lead {
+      width: 100%;
+      font-size: 0.77rem;
+      line-height: 1.45;
+      color: #f1f5f9;
+      text-align: left;
+      padding: 0.52rem 0.68rem;
+      border-radius: 10px;
+      background: rgba(255, 85, 0, 0.09);
+      border-left: 3px solid var(--fire-1);
+    }
+
+    .phone-lead strong {
+      color: var(--gold);
+    }
+
+    .phone-feature-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .phone-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.52rem;
+      padding: 0.46rem 0.62rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      text-align: left;
+      font-size: 0.74rem;
+      line-height: 1.35;
+      color: #e2e8f0;
+    }
+
+    .phone-feature-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: #050508;
+      background: linear-gradient(135deg, var(--gold), var(--fire-1));
+      padding: 0.16rem 0.42rem;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .phone-custom-text {
+      width: 100%;
+      font-size: 0.74rem;
+      line-height: 1.48;
+      color: #cbd5e1;
+      text-align: left;
+      white-space: pre-line;
+      background: rgba(5, 5, 8, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 10px;
+      padding: 0.55rem 0.68rem;
+    }
+
+    .phone-footer-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.42rem;
+      flex-shrink: 0;
+    }
+
+    .phone-home-bar {
+      width: 92px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.28);
+      margin: 0.2rem auto 0;
+    }
+
+    /* HEADER UTAMA */
     .hero-header {
-      padding: 2.2rem 1rem 0.95rem; text-align: center; position: relative;
-      z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 0.95rem;
+      padding: 2rem 1rem 0.9rem;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
     }
 
-    .logo-ring {
+    .logo-frame {
       position: relative;
       padding: 3px;
-      border-radius: 30px;
-      background: linear-gradient(135deg, #ffd166, #ff5900, #ff1e42, #ff8c00);
-      box-shadow: 0 0 36px rgba(255, 89, 0, 0.45);
+      border-radius: 26px;
+      background: linear-gradient(135deg, var(--gold), var(--fire-1), var(--fire-2));
+      box-shadow: 0 0 34px rgba(255, 85, 0, 0.45);
       animation: logoSpin 16s linear infinite;
       will-change: transform;
     }
@@ -68,130 +292,94 @@
     @keyframes logoSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .logo-box {
-      width: 144px; height: 144px; border-radius: 27px; background: #050507;
-      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      width: 138px; height: 138px; border-radius: 23px; background: #050508;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
       user-select: none; pointer-events: none;
     }
 
     .logo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .welcome-wrap {
+    .welcome-panel {
       position: relative;
-      max-width: 640px;
-      padding: 0.78rem 1.25rem;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(22, 16, 24, 0.88), rgba(8, 8, 12, 0.92));
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 140, 50, 0.42);
-      box-shadow:
-        0 14px 36px rgba(0, 0, 0, 0.7),
-        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      max-width: 620px;
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(20, 15, 24, 0.92), rgba(8, 8, 13, 0.96));
+      border: 1px solid rgba(255, 110, 40, 0.5);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .welcome-panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 16px; right: 16px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--fire-1), var(--fire-2), transparent);
     }
 
     .welcome-title {
-      font-size: clamp(1.12rem, 4.5vw, 1.65rem);
+      font-size: clamp(1.08rem, 4.4vw, 1.58rem);
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       line-height: 1.32;
-      background: linear-gradient(110deg, #ffffff 0%, #ffe082 26%, #ff6a00 52%, #ff1e42 78%, #ffd166 100%);
+      background: linear-gradient(110deg, #ffffff 0%, var(--gold) 28%, var(--fire-1) 55%, var(--fire-2) 82%, #ffe082 100%);
       background-size: 220% auto;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 14px rgba(255, 89, 0, 0.45));
-      animation: textShine 4.5s linear infinite;
+      animation: shineSweep 4.5s linear infinite;
     }
 
-    @keyframes textShine {
+    @keyframes shineSweep {
       0% { background-position: 0% center; }
       100% { background-position: 220% center; }
     }
 
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem;
-      font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #ffb38a;
-      background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255, 89, 0, 0.5);
-      padding: 0.42rem 1.1rem; border-radius: 999px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(255, 89, 0, 0.22);
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.38rem 1rem; border-radius: 6px;
+      background: rgba(255, 85, 0, 0.12);
+      border: 1px solid rgba(255, 85, 0, 0.45);
+      color: #ffb285;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
     }
 
-    .hero-badge-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: #ff5900;
-      box-shadow: 0 0 10px #ff5900; animation: pulseDot 1.8s ease-in-out infinite;
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 2px;
+      background: var(--fire-1); box-shadow: 0 0 10px var(--fire-1);
+      transform: rotate(45deg);
     }
 
-    @keyframes pulseDot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.35); opacity: 0.75; }
-    }
-
-    /* LAYAR PILIH SERVER (AWAL MASUK) */
     .server-select-screen {
-      max-width: 460px;
-      margin: 1.35rem auto 3rem;
-      padding: 0 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.05rem;
+      max-width: 450px; margin: 1.25rem auto 3rem; padding: 0 1.15rem;
+      display: flex; flex-direction: column; gap: 1rem;
     }
 
-    .server-select-card {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(145deg, rgba(24, 16, 26, 0.92), rgba(7, 7, 12, 0.96));
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 110, 40, 0.45);
-      border-radius: var(--radius);
-      padding: 1.45rem 1.2rem;
-      text-align: center;
-      cursor: pointer;
-      box-shadow:
-        0 16px 38px rgba(0, 0, 0, 0.68),
-        0 0 24px rgba(255, 89, 0, 0.16),
-        inset 0 1px 0 rgba(255, 255, 255, 0.12);
-      transition: transform 0.18s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    .esports-server-btn {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(22, 16, 26, 0.95), rgba(8, 8, 13, 0.98));
+      border: 1px solid rgba(255, 95, 25, 0.45); border-left: 4px solid var(--fire-1);
+      border-radius: 12px; padding: 1.25rem 1.2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.7);
+      transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .server-select-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, transparent 20%, rgba(255, 170, 90, 0.14) 50%, transparent 80%);
-      transform: translateX(-100%);
-      transition: transform 0.55s ease;
-      pointer-events: none;
+    .esports-server-btn:hover {
+      transform: translateY(-2px); border-color: rgba(255, 145, 70, 0.85); border-left-color: var(--gold);
+      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.8), 0 0 24px rgba(255, 85, 0, 0.28);
     }
 
-    .server-select-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 165, 90, 0.85);
-      box-shadow:
-        0 20px 44px rgba(0, 0, 0, 0.78),
-        0 0 32px rgba(255, 89, 0, 0.34),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    .esports-server-btn:active { transform: scale(0.98); }
+    .esports-server-label { font-size: 1.05rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; }
+    .esports-server-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700;
+      color: var(--gold); background: rgba(255, 190, 59, 0.1);
+      border: 1px solid rgba(255, 190, 59, 0.35); padding: 0.25rem 0.55rem; border-radius: 6px;
     }
 
-    .server-select-card:hover::before {
-      transform: translateX(100%);
-    }
-
-    .server-select-card:active { transform: scale(0.97); }
-
-    .server-select-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #ffffff 0%, #ffd29d 55%, #ff7b39 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    /* STUDIO BUILDER UTAMA */
     .container {
       max-width: 1120px; margin: 0 auto; padding: 1rem 1rem 2.5rem;
       display: grid; grid-template-columns: 1fr; gap: 1.15rem;
@@ -202,144 +390,89 @@
     }
 
     .panel {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.15rem;
-      box-shadow:
-        0 20px 44px rgba(0, 0, 0, 0.65),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      margin-bottom: 0;
-    }
-
-    @media (min-width: 600px) {
-      .panel { padding: 1.3rem; }
+      background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
     }
 
     .panel-head {
       display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
-      padding-bottom: 0.85rem; margin-bottom: 1.05rem; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+      padding-bottom: 0.8rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap;
     }
 
     .panel-title {
-      font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 0.86rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
       display: flex; align-items: center; gap: 0.55rem;
     }
 
-    .accent-bar {
-      width: 4px; height: 17px; border-radius: 99px;
-      background: linear-gradient(180deg, var(--gold), var(--fire-1), var(--fire-2));
-      box-shadow: 0 0 10px rgba(255, 89, 0, 0.5);
-    }
+    .accent-bar { width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(180deg, var(--gold), var(--fire-1), var(--fire-2)); }
 
-    .top-bar-server {
+    .server-banner {
       display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
-      background: linear-gradient(90deg, rgba(255, 89, 0, 0.14), rgba(10, 10, 16, 0.9));
-      border: 1px solid rgba(255, 110, 40, 0.42);
-      border-radius: 13px; padding: 0.72rem 0.9rem; margin-bottom: 1rem;
+      background: rgba(255, 85, 0, 0.09); border: 1px solid rgba(255, 85, 0, 0.38);
+      border-left: 3px solid var(--fire-1); border-radius: 10px; padding: 0.7rem 0.85rem; margin-bottom: 1rem;
     }
 
-    .top-bar-text { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #ffb58a; }
+    .server-banner-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #ffb285; text-transform: uppercase; }
 
     .field { margin-bottom: 1rem; }
 
     .field-label {
-      display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem;
-      font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
-      margin-bottom: 0.45rem; gap: 0.5rem; flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.45rem; gap: 0.5rem; flex-wrap: wrap;
     }
 
-    .file-box {
-      background: var(--surface-elevated); border: 1px solid rgba(255, 92, 24, 0.45);
-      border-radius: 12px; padding: 0.65rem 0.75rem;
-    }
-
+    .file-box { background: var(--input-bg); border: 1px solid rgba(255, 85, 0, 0.4); border-radius: 10px; padding: 0.65rem 0.75rem; }
     input[type="file"] { width: 100%; font-size: 0.8rem; color: var(--muted); cursor: pointer; }
-
     input[type="file"]::file-selector-button {
       background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; border: none;
-      border-radius: 8px; padding: 0.45rem 0.8rem; margin-right: 0.65rem; font-size: 0.74rem;
-      font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer;
-      box-shadow: 0 4px 12px rgba(255, 50, 30, 0.3);
+      border-radius: 6px; padding: 0.45rem 0.8rem; margin-right: 0.65rem; font-size: 0.72rem;
+      font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
     }
 
     input[type="text"], textarea {
-      width: 100%; background: var(--surface-elevated); color: var(--text); border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.82rem 0.95rem; font-size: 0.88rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; background: var(--input-bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.8rem 0.9rem; font-size: 0.88rem; transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     textarea { min-height: 220px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.55; resize: vertical; }
-
-    input[type="text"]:focus, textarea:focus {
-      outline: none; border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(255, 89, 0, 0.24);
-    }
+    input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.22); }
 
     .actions { display: grid; grid-template-columns: 1fr; gap: 0.65rem; margin-top: 0.25rem; }
 
     .btn {
-      width: 100%; appearance: none; border: none; border-radius: 12px; padding: 0.86rem 1rem; font-size: 0.78rem;
-      font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; text-align: center;
-      transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
+      width: 100%; appearance: none; border: none; border-radius: 10px;
+      padding: 0.82rem 1rem; font-size: 0.76rem; font-weight: 800;
+      letter-spacing: 0.09em; text-transform: uppercase; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      transition: transform 0.14s ease, filter 0.2s ease;
     }
 
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn:active:not(:disabled) { transform: scale(0.98); }
 
-    .btn-fire {
-      background: linear-gradient(135deg, var(--fire-1), var(--fire-2));
-      color: #fff;
-      box-shadow:
-        0 10px 26px rgba(255, 42, 66, 0.36),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    }
-    .btn-fire:hover:not(:disabled) { filter: brightness(1.08); box-shadow: 0 12px 30px rgba(255, 65, 20, 0.5); }
+    .btn-fire { background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; box-shadow: 0 10px 24px rgba(255, 30, 66, 0.34); }
+    .btn-fire:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-ember { background: rgba(255, 85, 0, 0.12); color: #ffb285; border: 1px solid rgba(255, 85, 0, 0.5); }
+    .btn-dark { background: rgba(14, 14, 22, 0.95); color: var(--text); border: 1px solid var(--border); }
+    .btn-sm { width: auto; padding: 0.42rem 0.72rem; font-size: 0.7rem; border-radius: 7px; }
 
-    .btn-ember {
-      background: rgba(255, 89, 0, 0.12); color: #ffb38a;
-      border: 1px solid rgba(255, 110, 40, 0.55);
-    }
-    .btn-ember:hover:not(:disabled) { background: rgba(255, 89, 0, 0.2); }
-
-    .btn-dark {
-      background: rgba(14, 14, 21, 0.92); color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-dark:hover:not(:disabled) { border-color: rgba(255, 255, 255, 0.26); }
-
-    .btn-sm { width: auto; padding: 0.44rem 0.78rem; font-size: 0.7rem; border-radius: 9px; }
-
-    .publish-box {
-      margin-top: 1rem; padding: 1.05rem; border-radius: 14px;
-      background: linear-gradient(180deg, rgba(16, 13, 20, 0.95), rgba(8, 8, 12, 0.98));
-      border: 1px solid rgba(255, 92, 24, 0.48);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-
+    .publish-box { margin-top: 1rem; padding: 1rem; border-radius: 12px; background: rgba(7, 7, 12, 0.96); border: 1px solid rgba(255, 85, 0, 0.45); }
     .output-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.85rem; }
-    .output-actions .btn { padding: 0.74rem 0.75rem; font-size: 0.74rem; line-height: 1.25; }
-
+    .output-actions .btn { padding: 0.72rem 0.75rem; font-size: 0.72rem; line-height: 1.25; }
     .publish-status { margin-top: 0.85rem; font-size: 0.8rem; line-height: 1.55; color: var(--muted); word-break: break-word; overflow-wrap: anywhere; }
-    .publish-status a { color: #ffb38a; font-weight: 700; text-decoration: underline; }
+    .publish-status a { color: #ffb285; font-weight: 700; text-decoration: underline; }
 
     .preview-controls { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
     .preview-wrapper { width: 100%; display: flex; justify-content: center; }
-
-    .preview-frame {
-      width: 100%; height: 440px; border: 1px solid var(--border); border-radius: 14px;
-      background: #050507; transition: max-width 0.2s ease;
-    }
-
+    .preview-frame { width: 100%; height: 440px; border: 1px solid var(--border); border-radius: 12px; background: #050508; transition: max-width 0.2s ease; }
     .preview-frame.mobile-mode { max-width: 375px; }
-
     .preview-empty {
-      height: 360px; border: 1px dashed rgba(255, 255, 255, 0.18); border-radius: 14px;
-      background: rgba(8, 8, 13, 0.75);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.86rem; gap: 0.4rem;
+      height: 360px; border: 1px dashed rgba(255, 255, 255, 0.16); border-radius: 12px;
+      background: rgba(7, 7, 12, 0.75); display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.86rem; gap: 0.4rem;
     }
 
     .hidden { display: none !important; }
@@ -351,37 +484,91 @@
   <video id="bg-video" autoplay muted loop playsinline preload="auto" src="ssstik.io_1795312194787.mp4"></video>
   <div class="bg-scrim"></div>
 
+  <!-- KOTAK LAYAR HP DI AWAL MASUK -->
+  <div id="phone-intro-overlay" class="phone-intro-overlay">
+    <div class="phone-frame">
+      <div>
+        <div class="phone-notch">
+          <span class="phone-speaker"></span>
+          <span class="phone-camera"></span>
+        </div>
+
+        <div class="phone-top-bar">
+          <span class="phone-chip" id="intro-chip-text">ZIKZ APP // INTRO</span>
+          <button type="button" class="btn-skip-top" onclick="skipPhoneIntro()">SKIP ⏭</button>
+        </div>
+      </div>
+
+      <div class="phone-screen-content">
+        <div class="phone-logo-mini">
+          <img src="HALO.png" alt="Logo ZIKZ APP">
+        </div>
+        <h2 class="phone-heading" id="intro-heading-text">SELAMAT DATANG DI ZIKZ APP</h2>
+
+        <div class="phone-lead" id="intro-lead-text">
+          Ubah kode <strong>HTML, CSS &amp; JS</strong> menjadi halaman web siap pratinjau dan siap terbit.
+        </div>
+
+        <div class="phone-feature-list">
+          <div class="phone-feature-item">
+            <span class="phone-feature-num">01</span>
+            <span>Upload file <strong>.html / .htm</strong> atau tulis kode langsung</span>
+          </div>
+          <div class="phone-feature-item">
+            <span class="phone-feature-num">02</span>
+            <span>Cek <strong>Live Preview</strong> mode Full maupun HP</span>
+          </div>
+          <div class="phone-feature-item">
+            <span class="phone-feature-num">03</span>
+            <span><strong>Download HTML</strong> atau buat link web publik</span>
+          </div>
+          <div class="phone-feature-item">
+            <span class="phone-feature-num">04</span>
+            <span>Atur <strong>Maintenance</strong> &amp; intro dari dasbor</span>
+          </div>
+        </div>
+
+        <div class="phone-custom-text" id="intro-body-text">Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.</div>
+      </div>
+
+      <div class="phone-footer-actions">
+        <button type="button" class="btn btn-fire" id="intro-continue-btn" onclick="skipPhoneIntro()">
+          MASUK KE HALAMAN UTAMA ➔
+        </button>
+        <div class="phone-home-bar"></div>
+      </div>
+    </div>
+  </div>
+
   <header class="hero-header">
-    <div class="logo-ring">
+    <div class="logo-frame">
       <div class="logo-box">
         <img id="logo-img" class="logo-img" src="HALO.png" alt="Logo ZIKZ APP">
       </div>
     </div>
 
-    <div class="welcome-wrap">
+    <div class="welcome-panel">
       <h1 class="welcome-title">SELAMAT DATANG DI ZIKZ APP HTML TO WEB</h1>
     </div>
 
-    <div>
-      <div class="hero-badge">
-        <span class="hero-badge-dot"></span>
-        <span>PILIH SERVER</span>
-      </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      <span>ZIKZ SYSTEM READY</span>
     </div>
   </header>
 
-  <!-- HALAMAN AWAL: PILIH SERVER SAJA -->
   <main id="screen-server-select" class="server-select-screen">
-    <div class="server-select-card" onclick="enterServer(1)">
-      <div class="server-select-title">SERVER 1</div>
+    <div class="esports-server-btn" onclick="enterServer(1)">
+      <span class="esports-server-label">SERVER 1</span>
+      <span class="esports-server-tag">NODE 01</span>
     </div>
 
-    <div class="server-select-card" onclick="enterServer(2)">
-      <div class="server-select-title">SERVER 2</div>
+    <div class="esports-server-btn" onclick="enterServer(2)">
+      <span class="esports-server-label">SERVER 2</span>
+      <span class="esports-server-tag">NODE 02</span>
     </div>
   </main>
 
-  <!-- HALAMAN STUDIO (BARU MUNCUL SETELAH PILIH SERVER) -->
   <main id="screen-studio" class="container hidden">
     <div>
       <section class="panel">
@@ -392,8 +579,8 @@
           </div>
         </div>
 
-        <div class="top-bar-server">
-          <span class="top-bar-text" id="active-server-name">SERVER 1</span>
+        <div class="server-banner">
+          <span class="server-banner-text" id="active-server-name">SERVER 1</span>
           <button type="button" class="btn btn-dark btn-sm" onclick="backToSelectServer()">Ganti Server</button>
         </div>
 
@@ -458,15 +645,15 @@
     </section>
   </main>
 
-  <div id="zikz-maintenance-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#050507;color:#f9fafb;align-items:center;justify-content:center;padding:1.5rem;text-align:center;">
-    <div style="max-width:480px;width:100%;background:#0d0d12;border:1px solid rgba(255,81,0,0.65);border-radius:18px;padding:2rem;box-shadow:0 20px 50px rgba(0,0,0,0.85);">
-      <div style="display:inline-block;font-size:0.75rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:#ff9e75;border:1px solid rgba(255,81,0,0.5);padding:0.35rem 0.9rem;border-radius:999px;margin-bottom:1rem;">
+  <div id="zikz-maintenance-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#050508;color:#f8fafc;align-items:center;justify-content:center;padding:1.5rem;text-align:center;">
+    <div style="max-width:480px;width:100%;background:#0d0d14;border:1px solid rgba(255,85,0,0.65);border-radius:16px;padding:2rem;box-shadow:0 20px 50px rgba(0,0,0,0.85);">
+      <div style="display:inline-block;font-size:0.72rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:#ffb285;border:1px solid rgba(255,85,0,0.5);padding:0.35rem 0.9rem;border-radius:6px;margin-bottom:1rem;">
         SYSTEM MAINTENANCE
       </div>
-      <h1 style="font-size:1.5rem;font-weight:800;margin-bottom:0.75rem;color:#fff;">
+      <h1 style="font-size:1.45rem;font-weight:800;margin-bottom:0.75rem;color:#fff;">
         ZIKZ APP Sedang Diperbaiki
       </h1>
-      <p id="zikz-maintenance-msg" style="font-size:0.9rem;line-height:1.6;color:#cbd5e1;">
+      <p id="zikz-maintenance-msg" style="font-size:0.9rem;line-height:1.6;color:#94a3b8;">
         Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP.
       </p>
     </div>
@@ -474,6 +661,77 @@
 
   <script>
     let lastPublishedUrl = '';
+
+    const DEFAULT_INTRO = {
+      enabled: true,
+      chip: 'ZIKZ APP // INTRO',
+      heading: 'SELAMAT DATANG DI ZIKZ APP',
+      body: 'Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.',
+      buttonText: 'MASUK KE HALAMAN UTAMA ➔'
+    };
+
+    function applyIntroConfig(cfg) {
+      const overlay = document.getElementById('phone-intro-overlay');
+      if (!overlay) return;
+
+      const data = Object.assign({}, DEFAULT_INTRO, cfg || {});
+      if (data.enabled === false) {
+        overlay.classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('intro-chip-text').textContent = data.chip || DEFAULT_INTRO.chip;
+      document.getElementById('intro-heading-text').textContent = data.heading || DEFAULT_INTRO.heading;
+      document.getElementById('intro-body-text').textContent = data.body || DEFAULT_INTRO.body;
+      document.getElementById('intro-continue-btn').textContent = data.buttonText || DEFAULT_INTRO.buttonText;
+      overlay.classList.remove('hidden');
+    }
+
+    function skipPhoneIntro() {
+      const overlay = document.getElementById('phone-intro-overlay');
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    function getRepoTarget() {
+      const host = window.location.hostname;
+      const pathParts = window.location.pathname.split('/').filter(p => p.length > 0);
+      let owner = 'stokemailzikzstr-coder';
+      let repo = 'my-web';
+
+      if (host.includes('github.io')) {
+        owner = host.split('.')[0] || owner;
+        repo = pathParts.length > 0 && !pathParts[0].endsWith('.html') ? pathParts[0] : `${owner}.github.io`;
+      }
+
+      const pagesBase = repo === `${owner}.github.io`
+        ? `https://${owner}.github.io`
+        : `https://${owner}.github.io/${repo}`;
+
+      return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
+    }
+
+    async function loadPhoneIntro() {
+      let localCfg = null;
+      try {
+        const rawLocal = localStorage.getItem('zikzapp_phone_intro_v1');
+        if (rawLocal) localCfg = JSON.parse(rawLocal);
+      } catch (err) {}
+
+      if (localCfg) applyIntroConfig(localCfg);
+
+      const { fullSlug } = getRepoTarget();
+      try {
+        const url = `https://raw.githubusercontent.com/${fullSlug}/HEAD/intro.json?t=${Date.now()}`;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.ok) {
+          const remoteCfg = await res.json();
+          if (remoteCfg && typeof remoteCfg === 'object') {
+            applyIntroConfig(remoteCfg);
+            try { localStorage.setItem('zikzapp_phone_intro_v1', JSON.stringify(remoteCfg)); } catch (e) {}
+          }
+        }
+      } catch (err) {}
+    }
 
     function enterServer(serverNum) {
       const selectScreen = document.getElementById('screen-server-select');
@@ -506,24 +764,6 @@
       } catch (err) {
         return '';
       }
-    }
-
-    function getRepoTarget() {
-      const host = window.location.hostname;
-      const pathParts = window.location.pathname.split('/').filter(p => p.length > 0);
-      let owner = 'stokemailzikzstr-coder';
-      let repo = 'my-web';
-
-      if (host.includes('github.io')) {
-        owner = host.split('.')[0] || owner;
-        repo = pathParts.length > 0 && !pathParts[0].endsWith('.html') ? pathParts[0] : `${owner}.github.io`;
-      }
-
-      const pagesBase = repo === `${owner}.github.io`
-        ? `https://${owner}.github.io`
-        : `https://${owner}.github.io/${repo}`;
-
-      return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
     }
 
     async function checkZikzMaintenance() {
@@ -564,6 +804,7 @@
         vid.muted = true;
         vid.play().catch(() => {});
       }
+      loadPhoneIntro();
       checkZikzMaintenance();
     });
 

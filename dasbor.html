@@ -3,508 +3,350 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZIKZ APP // MONITORING DASHBOARD</title>
+  <title>ZIKZ APP // DASBOR CONTROL</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
     :root {
-      --bg: #050507;
-      --surface: rgba(14, 14, 20, 0.92);
-      --surface-elevated: #0b0b10;
+      --bg: #050508;
+      --card-bg: rgba(11, 11, 17, 0.92);
+      --input-bg: #07070c;
       --border: rgba(255, 255, 255, 0.12);
-      --border-fire: rgba(255, 81, 0, 0.6);
+      --fire-1: #ff5500;
+      --fire-2: #ff1e42;
+      --gold: #ffbe3b;
       --text: #f8fafc;
       --muted: #94a3b8;
-      --fire-1: #ff5100;
-      --fire-2: #ff1e42;
-      --glow: rgba(255, 62, 13, 0.28);
-      --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       min-height: 100vh;
       background:
-        radial-gradient(circle at 50% -10%, rgba(255, 81, 0, 0.22), transparent 55%),
-        radial-gradient(circle at 85% 20%, rgba(255, 30, 66, 0.14), transparent 45%),
+        radial-gradient(ellipse 75% 45% at 50% 0%, rgba(255, 85, 0, 0.22), transparent 65%),
+        radial-gradient(circle at 85% 80%, rgba(255, 30, 66, 0.12), transparent 45%),
         var(--bg);
       color: var(--text);
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       padding: 1.5rem 1rem 3rem;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
+    .container { max-width: 780px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 1.35rem; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.36rem 0.95rem; border-radius: 6px;
+      background: rgba(255, 85, 0, 0.12); border: 1px solid rgba(255, 85, 0, 0.45);
+      color: #ffb285; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 0.65rem;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 1.8rem;
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 2px;
+      background: var(--fire-1); box-shadow: 0 0 10px var(--fire-1); transform: rotate(45deg);
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.74rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #ffab88;
-      background: rgba(255, 81, 0, 0.1);
-      border: 1px solid rgba(255, 81, 0, 0.55);
-      padding: 0.42rem 1.15rem;
-      border-radius: 999px;
-      box-shadow: 0 0 22px rgba(255, 81, 0, 0.22);
-      margin-bottom: 0.85rem;
+    h1 {
+      font-size: clamp(1.45rem, 5vw, 2.05rem); font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: linear-gradient(110deg, #ffffff 0%, var(--gold) 28%, var(--fire-1) 55%, var(--fire-2) 82%, #ffe082 100%);
+      background-size: 220% auto;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    .title {
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: clamp(1.85rem, 5.5vw, 2.5rem);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 15%, #ff8c5a 55%, var(--fire-2) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 1rem;
-      right: 1rem;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--fire-1), var(--fire-2), transparent);
-      opacity: 0.85;
-    }
-
-    .stat-label {
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 800;
-      color: #ff9c73;
-      font-family: 'JetBrains Mono', monospace;
-    }
+    .top-nav { margin-bottom: 1.2rem; }
 
     .panel {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.4rem;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-    }
-
-    .panel::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 1.25rem;
-      right: 1.25rem;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--fire-1), var(--fire-2), transparent);
-      opacity: 0.85;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.2rem; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7); margin-bottom: 1.2rem;
     }
 
     .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+      padding-bottom: 0.8rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border);
     }
 
     .panel-title {
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.98rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
+      font-size: 0.86rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.55rem;
     }
 
     .accent-bar {
-      width: 4px;
-      height: 16px;
-      border-radius: 99px;
-      background: linear-gradient(180deg, var(--fire-1), var(--fire-2));
+      width: 4px; height: 16px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--gold), var(--fire-1), var(--fire-2));
     }
 
-    .field {
-      margin-bottom: 0.95rem;
-    }
+    .field { margin-bottom: 1rem; }
 
     .field-label {
-      display: block;
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.76rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--muted);
-      margin-bottom: 0.45rem;
+      display: block; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.45rem;
     }
 
-    select,
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      background: var(--surface-elevated);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.8rem 0.92rem;
-      font-size: 0.88rem;
-      font-family: inherit;
+    input[type="text"], input[type="password"], textarea {
+      width: 100%; background: var(--input-bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.8rem 0.9rem; font-size: 0.86rem; font-family: 'JetBrains Mono', monospace;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    select:focus,
-    input[type="text"]:focus,
-    input[type="password"]:focus {
-      outline: none;
-      border-color: var(--fire-1);
-      box-shadow: 0 0 0 3px rgba(255, 81, 0, 0.2);
+    textarea { min-height: 105px; resize: vertical; line-height: 1.5; }
+    input:focus, textarea:focus { outline: none; border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.22); }
+
+    .check-row {
+      display: flex; align-items: center; gap: 0.65rem; background: var(--input-bg);
+      border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 0.9rem;
+      margin-bottom: 1rem; font-size: 0.85rem; color: #e2e8f0;
     }
 
-    .btn-fire {
-      width: 100%;
-      background: linear-gradient(135deg, var(--fire-1), var(--fire-2));
-      color: #fff;
-      border: none;
-      padding: 0.8rem 1.15rem;
-      border-radius: 10px;
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 6px 18px var(--glow);
+    .btn-row { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+
+    .btn {
+      appearance: none; border: none; border-radius: 10px;
+      padding: 0.82rem 1rem; font-size: 0.76rem; font-weight: 800;
+      letter-spacing: 0.09em; text-transform: uppercase; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      transition: transform 0.14s ease, filter 0.2s ease;
     }
 
-    .btn-fire:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    .btn:active { transform: scale(0.98); }
 
-    .btn-refresh {
-      background: #050507;
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 0.5rem 0.95rem;
-      border-radius: 99px;
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+    .btn-fire { background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; box-shadow: 0 10px 24px rgba(255, 30, 66, 0.34); flex: 1 1 150px; }
+    .btn-dark { background: rgba(14, 14, 22, 0.95); color: var(--text); border: 1px solid var(--border); flex: 1 1 140px; }
+    .btn-on { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; flex: 1; }
+    .btn-off { background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; flex: 1; }
 
-    .btn-refresh:hover {
-      background: #14141a;
-      border-color: var(--fire-1);
-    }
-
-    .status-note {
-      margin-top: 0.75rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.5;
-      word-break: break-word;
-    }
-
-    .web-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-
-    .web-item {
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-      transition: border-color 0.2s;
-    }
-
-    .web-item:hover {
-      border-color: var(--border-fire);
-    }
-
-    .web-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .web-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .web-date {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .btn-open {
-      background: linear-gradient(135deg, var(--fire-1), var(--fire-2));
-      color: #fff;
-      text-decoration: none;
-      padding: 0.52rem 1rem;
-      border-radius: 8px;
-      font-family: 'Chakra Petch', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      box-shadow: 0 4px 14px rgba(255, 42, 66, 0.3);
-    }
-
-    .loading, .empty {
-      text-align: center;
-      padding: 2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+    .status {
+      margin-top: 0.85rem; font-size: 0.82rem; line-height: 1.5;
+      color: #ffb285; word-break: break-word;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <header>
-      <div class="badge">ZIKZ APP ANALYTICS</div>
-      <h1 class="title">Web Monitoring Dashboard</h1>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span>ZIKZ APP CONTROL PANEL</span>
+      </div>
+      <h1>Dasbor ZIKZ APP</h1>
     </header>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">Total Web Dibuat</span>
-        <span class="stat-value" id="stat-total-web">-</span>
-      </div>
-
-      <div class="stat-card">
-        <span class="stat-label">Status ZIKZ APP</span>
-        <span class="stat-value" id="stat-maintenance-label">-</span>
-      </div>
+    <div class="top-nav">
+      <a class="btn btn-dark" href="index.html" style="width:100%;">← Kembali ke Halaman Utama</a>
     </div>
 
+    <!-- SETTING TEKS KOTAK LAYAR HP DI AWAL MASUK -->
     <section class="panel">
       <div class="panel-head">
         <div class="panel-title">
           <span class="accent-bar"></span>
-          <span>Menu Maintenance Web ZIKZ APP</span>
+          <span>SETTING LAYAR HP AWAL (INTRO)</span>
+        </div>
+      </div>
+
+      <div class="check-row">
+        <input type="checkbox" id="intro-enabled" checked>
+        <label for="intro-enabled" style="cursor:pointer;">Tampilkan kotak layar HP saat awal buka (bisa di-skip)</label>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="intro-chip">Label Atas Kecil</label>
+        <input type="text" id="intro-chip" value="ZIKZ APP // INTRO">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="intro-heading">Judul di Layar HP</label>
+        <input type="text" id="intro-heading" value="SELAMAT DATANG DI ZIKZ APP">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="intro-lead">Teks Pembuka (Lead)</label>
+        <input type="text" id="intro-lead" value="Ubah kode HTML, CSS & JS menjadi halaman web siap pratinjau dan siap terbit.">
+      </div>
+
+      <div class="field">
+        <label class="field-label">Kotak Poin 01</label>
+        <div class="btn-row">
+          <input type="text" id="intro-num-1" value="01" style="max-width:72px;">
+          <input type="text" id="intro-item-1" value="Upload file .html / .htm atau tulis kode langsung" style="flex:1;">
         </div>
       </div>
 
       <div class="field">
-        <label class="field-label" for="maintenance-mode">Status Web ZIKZ APP</label>
-        <select id="maintenance-mode">
-          <option value="false">Normal / Aktif (Bisa Diakses)</option>
-          <option value="true">Maintenance / Sedang Diperbaiki</option>
-        </select>
+        <label class="field-label">Kotak Poin 02</label>
+        <div class="btn-row">
+          <input type="text" id="intro-num-2" value="02" style="max-width:72px;">
+          <input type="text" id="intro-item-2" value="Cek Live Preview mode Full maupun HP" style="flex:1;">
+        </div>
       </div>
 
       <div class="field">
-        <label class="field-label" for="maintenance-message">Pesan Saat Sedang Diperbaiki</label>
-        <input type="text" id="maintenance-message" value="Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP. Silakan cek kembali beberapa saat lagi.">
+        <label class="field-label">Kotak Poin 03</label>
+        <div class="btn-row">
+          <input type="text" id="intro-num-3" value="03" style="max-width:72px;">
+          <input type="text" id="intro-item-3" value="Download HTML atau buat link web publik" style="flex:1;">
+        </div>
       </div>
 
       <div class="field">
-        <label class="field-label" for="dash-gh-token">Fine-Grained GitHub Token (Tersimpan Lokal di HP)</label>
-        <input type="password" id="dash-gh-token" placeholder="Tempel token GitHub untuk mengubah status maintenance...">
+        <label class="field-label">Kotak Poin 04</label>
+        <div class="btn-row">
+          <input type="text" id="intro-num-4" value="04" style="max-width:72px;">
+          <input type="text" id="intro-item-4" value="Atur Maintenance & intro dari dasbor" style="flex:1;">
+        </div>
       </div>
 
-      <button class="btn-fire" id="btn-save-maintenance" type="button" onclick="saveMaintenanceStatus()">
-        Simpan Status Maintenance
-      </button>
-      <p class="status-note" id="maintenance-status-note">
-        Mengatur status file <code>maintenance.json</code> di repository <code>stokemailzikzstr-coder/my-web</code>.
-      </p>
+      <div class="field">
+        <label class="field-label" for="intro-body">Isi Teks Catatan di Layar HP</label>
+        <textarea id="intro-body">Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.</textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="intro-btn-text">Teks Tombol Lanjut / Skip</label>
+        <input type="text" id="intro-btn-text" value="MASUK KE HALAMAN UTAMA ➔">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-fire" type="button" onclick="saveIntroLocal()">Simpan ke Browser</button>
+        <button class="btn btn-dark" type="button" onclick="publishIntroGitHub()">Simpan &amp; Upload ke GitHub</button>
+      </div>
+      <div id="status-intro" class="status"></div>
     </section>
 
+    <!-- SAKELAR MAINTENANCE MODE -->
     <section class="panel">
       <div class="panel-head">
         <div class="panel-title">
           <span class="accent-bar"></span>
-          <span>Daftar Web Yang Dibuat Pengguna</span>
+          <span>MODE MAINTENANCE WEB (ON / OFF)</span>
         </div>
-        <button class="btn-refresh" type="button" onclick="refreshDashboard()">Refresh Data</button>
       </div>
 
-      <div id="web-list-container" class="web-list">
-        <div class="loading">Memuat data dari GitHub...</div>
+      <div class="field">
+        <label class="field-label">Pilih Status Maintenance</label>
+        <div class="btn-row">
+          <button class="btn btn-on" type="button" onclick="setMaintenanceStatus(true)">AKTIFKAN (ON)</button>
+          <button class="btn btn-off" type="button" onclick="setMaintenanceStatus(false)">MATIKAN (OFF)</button>
+        </div>
       </div>
+
+      <div class="field">
+        <label class="field-label" for="dash-maint-msg">Pesan Maintenance</label>
+        <input type="text" id="dash-maint-msg" value="Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP.">
+      </div>
+
+      <div id="status-maint" class="status"></div>
+    </section>
+
+    <!-- TOKEN GITHUB -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <span class="accent-bar"></span>
+          <span>TOKEN GITHUB</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="dash-gh-token">Personal Access Token GitHub</label>
+        <input type="password" id="dash-gh-token" placeholder="Tempel token GitHub...">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-fire" type="button" onclick="saveGitHub()">Simpan Token</button>
+        <button class="btn btn-dark" type="button" onclick="clearGitHub()">Hapus Token</button>
+      </div>
+      <div id="status-gh" class="status"></div>
     </section>
   </div>
 
   <script>
-    const GH_OWNER = 'stokemailzikzstr-coder';
-    const GH_REPO = 'my-web';
-    const MAINT_FILE = 'maintenance.json';
-    let lastSavedAt = 0;
-
-    function getAuthHeaders(token) {
-      const headers = {
-        Accept: 'application/vnd.github+json'
-      };
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
+    function getGitHubTokenValue() {
+      try {
+        return (
+          localStorage.getItem('zikzapp_admin_token_v1') ||
+          localStorage.getItem('zikzapp_admin_token') ||
+          localStorage.getItem('zikzapp_gh_token') ||
+          ''
+        ).trim();
+      } catch (err) {
+        return '';
       }
-      return headers;
+    }
+
+    function getRepoTarget() {
+      const host = window.location.hostname;
+      const pathParts = window.location.pathname.split('/').filter(p => p.length > 0);
+      let owner = 'stokemailzikzstr-coder';
+      let repo = 'my-web';
+
+      if (host.includes('github.io')) {
+        owner = host.split('.')[0] || owner;
+        repo = pathParts.length > 0 && !pathParts[0].endsWith('.html') ? pathParts[0] : `${owner}.github.io`;
+      }
+      return { fullSlug: `${owner}/${repo}` };
     }
 
     function toBase64Utf8(str) {
       const bytes = new TextEncoder().encode(str);
       let binary = '';
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
       return btoa(binary);
     }
 
-    function fromBase64Utf8(str) {
-      const binary = atob(str);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
-      return new TextDecoder().decode(bytes);
+    function readIntroForm() {
+      return {
+        enabled: document.getElementById('intro-enabled').checked,
+        chip: (document.getElementById('intro-chip').value || '').trim() || 'ZIKZ APP // INTRO',
+        heading: (document.getElementById('intro-heading').value || '').trim() || 'SELAMAT DATANG DI ZIKZ APP',
+        lead: (document.getElementById('intro-lead').value || '').trim(),
+        num1: (document.getElementById('intro-num-1').value || '').trim() || '01',
+        item1: (document.getElementById('intro-item-1').value || '').trim(),
+        num2: (document.getElementById('intro-num-2').value || '').trim() || '02',
+        item2: (document.getElementById('intro-item-2').value || '').trim(),
+        num3: (document.getElementById('intro-num-3').value || '').trim() || '03',
+        item3: (document.getElementById('intro-item-3').value || '').trim(),
+        num4: (document.getElementById('intro-num-4').value || '').trim() || '04',
+        item4: (document.getElementById('intro-item-4').value || '').trim(),
+        body: (document.getElementById('intro-body').value || '').trim(),
+        buttonText: (document.getElementById('intro-btn-text').value || '').trim() || 'MASUK KE HALAMAN UTAMA ➔'
+      };
     }
 
-    function applyMaintenanceUI(isMaint, message) {
-      const modeSelect = document.getElementById('maintenance-mode');
-      const msgInput = document.getElementById('maintenance-message');
-      const statusBadge = document.getElementById('stat-maintenance-label');
-
-      if (modeSelect) modeSelect.value = isMaint ? 'true' : 'false';
-      if (msgInput && message) msgInput.value = message;
-      if (statusBadge) statusBadge.textContent = isMaint ? 'MAINTENANCE' : 'AKTIF';
-    }
-
-    async function loadMaintenanceStatus() {
-      const token = (document.getElementById('dash-gh-token').value || '').trim();
-
+    function saveIntroLocal() {
+      const cfg = readIntroForm();
       try {
-        if (token) {
-          const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${MAINT_FILE}?t=${Date.now()}`;
-          const res = await fetch(apiUrl, {
-            headers: getAuthHeaders(token),
-            cache: 'no-store'
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.content) {
-              const decoded = JSON.parse(fromBase64Utf8(data.content.replace(/\n/g, '')));
-              // Cegah respon API yang lebih lama menimpa perubahan yang baru disimpan dalam 15 detik terakhir
-              const remoteTime = decoded && decoded.updatedAt ? Date.parse(decoded.updatedAt) : 0;
-              if (lastSavedAt && remoteTime && remoteTime + 15000 < lastSavedAt) {
-                return;
-              }
-              applyMaintenanceUI(Boolean(decoded && decoded.maintenance === true), decoded.message || '');
-              return;
-            }
-          }
-        }
-
-        const rawUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/HEAD/${MAINT_FILE}?t=${Date.now()}`;
-        const rawRes = await fetch(rawUrl, { cache: 'no-store' });
-        if (rawRes.ok) {
-          const rawData = await rawRes.json();
-          applyMaintenanceUI(Boolean(rawData && rawData.maintenance === true), rawData.message || '');
-          return;
-        }
-
-        applyMaintenanceUI(false, '');
+        localStorage.setItem('zikzapp_phone_intro_v1', JSON.stringify(cfg));
+        document.getElementById('status-intro').textContent = 'Teks layar HP tersimpan di browser ini.';
       } catch (err) {
-        applyMaintenanceUI(false, '');
+        document.getElementById('status-intro').textContent = 'Gagal menyimpan ke browser.';
       }
     }
 
-    async function saveMaintenanceStatus() {
-      const modeSelect = document.getElementById('maintenance-mode');
-      const msgInput = document.getElementById('maintenance-message');
-      const tokenInput = document.getElementById('dash-gh-token');
-      const btn = document.getElementById('btn-save-maintenance');
-      const note = document.getElementById('maintenance-status-note');
-
-      const token = (tokenInput.value || '').trim();
+    async function publishIntroGitHub() {
+      const statusEl = document.getElementById('status-intro');
+      const token = getGitHubTokenValue();
       if (!token) {
-        note.textContent = 'Tempel Fine-grained GitHub token terlebih dahulu untuk menyimpan perubahan.';
+        statusEl.textContent = 'Simpan Token GitHub dulu untuk upload ke GitHub.';
         return;
       }
 
-      try {
-        localStorage.setItem('zikzapp_gh_token', token);
-      } catch (err) {}
+      const cfg = readIntroForm();
+      saveIntroLocal();
 
-      const isMaint = modeSelect.value === 'true';
-      const message = (msgInput.value || '').trim() || 'Sedang dalam perbaikan sistem. Silakan coba lagi nanti.';
-      const nowIso = new Date().toISOString();
-      const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${MAINT_FILE}`;
-
-      btn.disabled = true;
-      note.textContent = 'Menyimpan status maintenance ke GitHub...';
+      const { fullSlug } = getRepoTarget();
+      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/intro.json`;
+      statusEl.textContent = 'Mengupload intro.json ke GitHub...';
 
       try {
         let sha = null;
         const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
-          headers: getAuthHeaders(token),
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
           cache: 'no-store'
         });
         if (checkRes.ok) {
@@ -512,115 +354,143 @@
           sha = existing.sha;
         }
 
-        const contentObj = {
-          maintenance: isMaint,
-          message: message,
-          updatedAt: nowIso
-        };
-
         const payload = {
-          message: `${isMaint ? 'Enable' : 'Disable'} maintenance mode via ZIKZ Dashboard`,
-          content: toBase64Utf8(JSON.stringify(contentObj, null, 2))
+          message: 'Update intro.json via ZIKZ DASBOR',
+          content: toBase64Utf8(JSON.stringify(cfg, null, 2))
         };
-        if (sha) {
-          payload.sha = sha;
-        }
+        if (sha) payload.sha = sha;
 
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
           headers: {
-            ...getAuthHeaders(token),
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await putRes.json();
+        if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
+
+        statusEl.textContent = 'Berhasil! Teks layar HP tersimpan & ter-upload ke GitHub.';
+      } catch (err) {
+        statusEl.textContent = `Gagal upload: ${err.message}`;
+      }
+    }
+
+    function loadAll() {
+      try {
+        const gh = getGitHubTokenValue();
+        if (gh) {
+          document.getElementById('dash-gh-token').value = gh;
+          document.getElementById('status-gh').textContent = 'Token GitHub tersimpan di browser ini.';
+        }
+
+        const rawIntro = localStorage.getItem('zikzapp_phone_intro_v1');
+        if (rawIntro) {
+          const cfg = JSON.parse(rawIntro);
+          if (typeof cfg.enabled === 'boolean') document.getElementById('intro-enabled').checked = cfg.enabled;
+          if (cfg.chip) document.getElementById('intro-chip').value = cfg.chip;
+          if (cfg.heading) document.getElementById('intro-heading').value = cfg.heading;
+          if (typeof cfg.lead === 'string') document.getElementById('intro-lead').value = cfg.lead;
+          if (cfg.num1) document.getElementById('intro-num-1').value = cfg.num1;
+          if (typeof cfg.item1 === 'string') document.getElementById('intro-item-1').value = cfg.item1;
+          if (cfg.num2) document.getElementById('intro-num-2').value = cfg.num2;
+          if (typeof cfg.item2 === 'string') document.getElementById('intro-item-2').value = cfg.item2;
+          if (cfg.num3) document.getElementById('intro-num-3').value = cfg.num3;
+          if (typeof cfg.item3 === 'string') document.getElementById('intro-item-3').value = cfg.item3;
+          if (cfg.num4) document.getElementById('intro-num-4').value = cfg.num4;
+          if (typeof cfg.item4 === 'string') document.getElementById('intro-item-4').value = cfg.item4;
+          if (typeof cfg.body === 'string') document.getElementById('intro-body').value = cfg.body;
+          if (cfg.buttonText) document.getElementById('intro-btn-text').value = cfg.buttonText;
+        }
+      } catch (err) {}
+    }
+
+    function saveGitHub() {
+      const val = (document.getElementById('dash-gh-token').value || '').trim();
+      if (!val) {
+        document.getElementById('status-gh').textContent = 'Isi token GitHub terlebih dahulu.';
+        return;
+      }
+      try {
+        localStorage.setItem('zikzapp_admin_token_v1', val);
+        localStorage.setItem('zikzapp_admin_token', val);
+        localStorage.setItem('zikzapp_gh_token', val);
+        document.getElementById('status-gh').textContent = 'Token GitHub berhasil disimpan di browser.';
+      } catch (err) {
+        document.getElementById('status-gh').textContent = 'Gagal menyimpan token GitHub.';
+      }
+    }
+
+    function clearGitHub() {
+      try {
+        localStorage.removeItem('zikzapp_admin_token_v1');
+        localStorage.removeItem('zikzapp_admin_token');
+        localStorage.removeItem('zikzapp_gh_token');
+        document.getElementById('dash-gh-token').value = '';
+        document.getElementById('status-gh').textContent = 'Token GitHub dihapus dari browser.';
+      } catch (err) {}
+    }
+
+    async function setMaintenanceStatus(isActive) {
+      const statusEl = document.getElementById('status-maint');
+      const token = getGitHubTokenValue();
+
+      if (!token) {
+        statusEl.textContent = 'Simpan Token GitHub terlebih dahulu di kolom di bawah!';
+        return;
+      }
+
+      const message = (document.getElementById('dash-maint-msg').value || '').trim() || 'Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP.';
+      const { fullSlug } = getRepoTarget();
+      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/maintenance.json`;
+
+      statusEl.textContent = isActive ? 'Mengaktifkan maintenance...' : 'Mematikan maintenance...';
+
+      try {
+        let sha = null;
+        const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+          cache: 'no-store'
+        });
+
+        if (checkRes.ok) {
+          const existing = await checkRes.json();
+          sha = existing.sha;
+        }
+
+        const contentJson = JSON.stringify({ maintenance: isActive, message }, null, 2);
+        const payload = {
+          message: `Set maintenance to ${isActive ? 'ON' : 'OFF'} via ZIKZ DASBOR`,
+          content: toBase64Utf8(contentJson)
+        };
+        if (sha) payload.sha = sha;
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/vnd.github+json',
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload)
         });
 
         const result = await putRes.json();
-        if (!putRes.ok) {
-          throw new Error(result.message || `Gagal menyimpan (HTTP ${putRes.status})`);
-        }
+        if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
 
-        lastSavedAt = Date.parse(nowIso);
-        applyMaintenanceUI(isMaint, message);
-        note.textContent = isMaint
-          ? 'Status BERHASIL diubah ke MAINTENANCE! Web ZIKZ APP menampilkan layar perbaikan.'
-          : 'Status BERHASIL diubah ke NORMAL / AKTIF! Web ZIKZ APP bisa diakses kembali.';
+        statusEl.style.color = isActive ? '#f87171' : '#4ade80';
+        statusEl.textContent = isActive
+          ? 'MAINTENANCE BERHASIL DIAKTIFKAN!'
+          : 'MAINTENANCE BERHASIL DIMATIKAN!';
       } catch (err) {
-        note.textContent = `Gagal menyimpan status: ${err.message}`;
-      } finally {
-        btn.disabled = false;
+        statusEl.style.color = '#f87171';
+        statusEl.textContent = `Gagal: ${err.message}`;
       }
     }
 
-    async function fetchWebList() {
-      const container = document.getElementById('web-list-container');
-      const statTotal = document.getElementById('stat-total-web');
-      const token = (document.getElementById('dash-gh-token').value || '').trim();
-      container.innerHTML = '<div class="loading">Memuat data dari GitHub...</div>';
-
-      try {
-        const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/?t=${Date.now()}`, {
-          headers: getAuthHeaders(token),
-          cache: 'no-store'
-        });
-        if (!res.ok) {
-          throw new Error(`Gagal mengambil data dari GitHub (HTTP ${res.status})`);
-        }
-
-        const files = await res.json();
-        if (!Array.isArray(files)) {
-          throw new Error('Format respon repository tidak sesuai');
-        }
-
-        const htmlFiles = files.filter(file =>
-          file.type === 'file' &&
-          file.name.endsWith('.html') &&
-          file.name !== 'index.html' &&
-          file.name !== 'dasborzikzapp.html'
-        );
-
-        statTotal.textContent = String(htmlFiles.length);
-
-        if (htmlFiles.length === 0) {
-          container.innerHTML = '<div class="empty">Belum ada web baru yang dibuat oleh pengguna.</div>';
-          return;
-        }
-
-        container.innerHTML = '';
-        htmlFiles.forEach(file => {
-          const liveUrl = `https://${GH_OWNER}.github.io/${GH_REPO}/${file.name}`;
-          const item = document.createElement('div');
-          item.className = 'web-item';
-          item.innerHTML = `
-            <div class="web-info">
-              <span class="web-name">${file.name}</span>
-              <span class="web-date">Ukuran File: ${(file.size / 1024).toFixed(1)} KB</span>
-            </div>
-            <a href="${liveUrl}" target="_blank" rel="noopener noreferrer" class="btn-open">Buka Web</a>
-          `;
-          container.appendChild(item);
-        });
-      } catch (err) {
-        container.innerHTML = `<div class="empty" style="color:#ef4444;">Error: ${err.message}</div>`;
-        statTotal.textContent = '0';
-      }
-    }
-
-    async function refreshDashboard() {
-      await Promise.all([fetchWebList(), loadMaintenanceStatus()]);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      try {
-        const savedToken = localStorage.getItem('zikzapp_gh_token');
-        const tokenInput = document.getElementById('dash-gh-token');
-        if (savedToken && tokenInput) {
-          tokenInput.value = savedToken;
-        }
-      } catch (err) {}
-
-      refreshDashboard();
-    });
+    window.addEventListener('DOMContentLoaded', loadAll);
   </script>
 </body>
 </html>

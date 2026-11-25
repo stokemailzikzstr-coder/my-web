@@ -1,1198 +1,540 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZIKZ APP // HTML TO WEB</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dasbor Builder Web — zikzapp/my-web</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
-
     :root {
-      --bg: #050508;
-      --card-bg: rgba(11, 11, 17, 0.9);
-      --input-bg: #07070c;
-      --border: rgba(255, 255, 255, 0.12);
-      --fire-1: #ff5500;
-      --fire-2: #ff1e42;
-      --gold: #ffbe3b;
-      --cyan-soft: #38bdf8;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --bg: #0b0c10;
+      --panel: rgba(20, 22, 30, 0.85);
+      --panel-border: rgba(255, 255, 255, 0.1);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --accent-1: #ff5e1a;
+      --accent-2: #e11d48;
+      --ok: #22c55e;
+      --err: #ef4444;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    html, body {
-      min-height: 100%;
-      background: transparent !important;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 94, 26, 0.18), transparent 45%),
+        radial-gradient(circle at bottom right, rgba(225, 29, 72, 0.16), transparent 45%),
+        var(--bg);
       color: var(--text);
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      overflow-x: hidden;
-    }
-
-    .bg-base {
-      position: fixed; inset: 0; z-index: -5;
-      background:
-        radial-gradient(ellipse 75% 45% at 50% 0%, rgba(255, 85, 0, 0.24), transparent 65%),
-        radial-gradient(circle at 15% 85%, rgba(255, 30, 66, 0.14), transparent 45%),
-        #050508;
-    }
-
-    #bg-video {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      object-fit: cover; z-index: -2; opacity: 1; pointer-events: none;
-    }
-
-    .bg-scrim {
-      position: fixed; inset: 0; z-index: -1; pointer-events: none;
-      background: linear-gradient(180deg, rgba(5, 5, 8, 0.35) 0%, rgba(5, 5, 8, 0.68) 100%);
-    }
-
-    /* KOTAK BENTUK LAYAR HP DI AWAL MASUK */
-    .phone-intro-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9990;
-      background: rgba(3, 3, 6, 0.88);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.9rem;
-    }
-
-    .phone-frame {
-      width: 100%;
-      max-width: 344px;
-      height: auto;
-      min-height: 440px;
-      max-height: 90vh;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255, 85, 0, 0.2), transparent 58%),
-        linear-gradient(165deg, #171220 0%, #07070c 55%, #0c070c 100%);
-      border: 2px solid rgba(255, 110, 40, 0.65);
-      border-radius: 34px;
-      padding: 0.78rem 0.95rem 1rem;
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.9),
-        0 0 36px rgba(255, 85, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.16);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 0.65rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .phone-notch {
-      width: 104px;
-      height: 18px;
-      background: #040407;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 999px;
-      margin: 0 auto 0.55rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-    }
-
-    .phone-speaker {
-      width: 38px;
-      height: 3.5px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .phone-camera {
-      width: 6.5px;
-      height: 6.5px;
-      border-radius: 50%;
-      background: rgba(255, 85, 0, 0.65);
-      box-shadow: 0 0 6px rgba(255, 85, 0, 0.6);
-    }
-
-    .phone-top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-
-    .phone-chip {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.64rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      background: rgba(255, 190, 59, 0.12);
-      border: 1px solid rgba(255, 190, 59, 0.35);
-      padding: 0.24rem 0.55rem;
-      border-radius: 999px;
-    }
-
-    .btn-skip-top {
-      appearance: none;
-      background: rgba(255, 85, 0, 0.14);
-      border: 1px solid rgba(255, 110, 40, 0.45);
-      color: #ffd0b5;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.66rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.26rem 0.62rem;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-
-    .btn-skip-top:active { transform: scale(0.96); }
-
-    .phone-screen-content {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.7rem;
-      padding: 0.25rem 0.15rem;
-      overflow-y: auto;
-    }
-
-    .phone-logo-mini {
-      width: 66px;
-      height: 66px;
-      border-radius: 16px;
-      padding: 2px;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, var(--gold), var(--fire-1), var(--fire-2));
-      box-shadow: 0 0 20px rgba(255, 85, 0, 0.4);
-    }
-
-    .phone-logo-mini img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 14px;
-      display: block;
-    }
-
-    .phone-heading {
-      font-size: 1rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      text-align: center;
-      background: linear-gradient(110deg, #ffffff 0%, var(--gold) 45%, var(--fire-1) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .phone-paragraph {
-      width: 100%;
-      font-size: 0.8rem;
-      line-height: 1.6;
-      color: #e2e8f0;
-      text-align: left;
-      padding: 0.72rem 0.8rem;
-      border-radius: 12px;
-      background: rgba(255, 85, 0, 0.08);
-      border: 1px solid rgba(255, 110, 40, 0.32);
-      border-left: 3px solid var(--fire-1);
-    }
-
-    .phone-footer-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.42rem;
-      flex-shrink: 0;
-    }
-
-    .phone-home-bar {
-      width: 92px;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.28);
-      margin: 0.2rem auto 0;
-    }
-
-    /* HEADER UTAMA */
-    .hero-header {
-      padding: 2rem 1rem 0.9rem;
-      text-align: center;
-      position: relative;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.9rem;
-    }
-
-    .logo-frame {
-      position: relative;
-      padding: 3px;
-      border-radius: 26px;
-      background: linear-gradient(135deg, var(--gold), var(--fire-1), var(--fire-2));
-      box-shadow: 0 0 34px rgba(255, 85, 0, 0.45);
-      animation: logoSpin 16s linear infinite;
-      will-change: transform;
-    }
-
-    @keyframes logoSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-    .logo-box {
-      width: 138px; height: 138px; border-radius: 23px; background: #050508;
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
-      user-select: none; pointer-events: none;
-    }
-
-    .logo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    .welcome-panel {
-      position: relative;
-      max-width: 620px;
-      width: 100%;
-      padding: 0.85rem 1.2rem;
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(20, 15, 24, 0.92), rgba(8, 8, 13, 0.96));
-      border: 1px solid rgba(255, 110, 40, 0.5);
-      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    }
-
-    .welcome-panel::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 16px; right: 16px; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), var(--fire-1), var(--fire-2), transparent);
-    }
-
-    .welcome-title {
-      font-size: clamp(1.08rem, 4.4vw, 1.58rem);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      line-height: 1.32;
-      background: linear-gradient(110deg, #ffffff 0%, var(--gold) 28%, var(--fire-1) 55%, var(--fire-2) 82%, #ffe082 100%);
-      background-size: 220% auto;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shineSweep 4.5s linear infinite;
-    }
-
-    @keyframes shineSweep {
-      0% { background-position: 0% center; }
-      100% { background-position: 220% center; }
-    }
-
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.38rem 1rem; border-radius: 6px;
-      background: rgba(255, 85, 0, 0.12);
-      border: 1px solid rgba(255, 85, 0, 0.45);
-      color: #ffb285;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
-    }
-
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 2px;
-      background: var(--fire-1); box-shadow: 0 0 10px var(--fire-1);
-      transform: rotate(45deg);
-    }
-
-    .server-select-screen {
-      max-width: 450px; margin: 1.25rem auto 3rem; padding: 0 1.15rem;
-      display: flex; flex-direction: column; gap: 1rem;
-    }
-
-    .esports-server-btn {
-      position: relative; overflow: hidden;
-      background: linear-gradient(135deg, rgba(22, 16, 26, 0.95), rgba(8, 8, 13, 0.98));
-      border: 1px solid rgba(255, 95, 25, 0.45); border-left: 4px solid var(--fire-1);
-      border-radius: 12px; padding: 1.25rem 1.2rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.7);
-      transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .esports-server-btn:hover {
-      transform: translateY(-2px); border-color: rgba(255, 145, 70, 0.85); border-left-color: var(--gold);
-      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.8), 0 0 24px rgba(255, 85, 0, 0.28);
-    }
-
-    .esports-server-btn:active { transform: scale(0.98); }
-    .esports-server-label { font-size: 1.05rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; }
-    .esports-server-tag {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700;
-      color: var(--gold); background: rgba(255, 190, 59, 0.1);
-      border: 1px solid rgba(255, 190, 59, 0.35); padding: 0.25rem 0.55rem; border-radius: 6px;
-    }
-
-    .server2-lock-card {
-      margin-top: 0.25rem;
-      background: linear-gradient(165deg, rgba(24, 14, 18, 0.96), rgba(8, 8, 13, 0.98));
-      border: 1px solid rgba(255, 30, 66, 0.55);
-      border-left: 4px solid var(--fire-2);
-      border-radius: 14px;
-      padding: 1.2rem;
-      text-align: center;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.78);
-    }
-
-    .server2-lock-badge {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #ffbe3b;
-      background: rgba(255, 30, 66, 0.14);
-      border: 1px solid rgba(255, 30, 66, 0.45);
-      padding: 0.24rem 0.65rem;
-      border-radius: 6px;
-      margin-bottom: 0.65rem;
-    }
-
-    .server2-lock-title {
-      font-size: 1rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #fff;
-      margin-bottom: 0.4rem;
-    }
-
-    .server2-lock-desc {
-      font-size: 0.82rem;
-      line-height: 1.5;
-      color: var(--muted);
+      min-height: 100vh;
+      padding: 16px;
     }
 
     .container {
-      max-width: 1120px; margin: 0 auto; padding: 1rem 1rem 2.5rem;
-      display: grid; grid-template-columns: 1fr; gap: 1.15rem;
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    @media (min-width: 900px) {
-      .container { grid-template-columns: 1.05fr 0.95fr; align-items: start; padding: 1.25rem 1.25rem 2.5rem; gap: 1.25rem; }
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
     }
 
-    .panel {
-      background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
-    }
-
-    .panel-head {
-      display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
-      padding-bottom: 0.8rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap;
-    }
-
-    .panel-title {
-      font-size: 0.86rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
-      display: flex; align-items: center; gap: 0.55rem;
-    }
-
-    .accent-bar { width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(180deg, var(--gold), var(--fire-1), var(--fire-2)); }
-
-    .server-banner {
-      display: flex; align-items: center; justify-content: space-between; gap: 0.65rem;
-      background: rgba(255, 85, 0, 0.09); border: 1px solid rgba(255, 85, 0, 0.38);
-      border-left: 3px solid var(--fire-1); border-radius: 10px; padding: 0.72rem 0.85rem; margin-bottom: 1rem;
-    }
-
-    .server-banner-text {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; font-weight: 700;
-      color: #ffb285; text-transform: uppercase; letter-spacing: 0.04em;
-    }
-
-    .field { margin-bottom: 1rem; }
-
-    .field-label {
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.73rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-      color: #e2e8f0; margin-bottom: 0.5rem; gap: 0.5rem; line-height: 1.35;
-    }
-
-    .folder-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
+    .header-title {
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #050508;
-      background: linear-gradient(135deg, var(--gold), var(--fire-1));
-      padding: 0.22rem 0.55rem;
-      border-radius: 6px;
-      white-space: nowrap;
-      flex-shrink: 0;
+      letter-spacing: 0.3px;
     }
 
-    .file-box {
-      background: linear-gradient(180deg, rgba(16, 12, 22, 0.95), rgba(7, 7, 12, 0.98));
-      border: 1px solid rgba(255, 190, 59, 0.35);
-      border-left: 3px solid var(--gold);
-      border-radius: 10px;
-      padding: 0.72rem 0.8rem;
+    .header-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 4px;
     }
 
-    .file-picker-row {
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .btn-link-inline {
+      background: none;
+      border: none;
+      color: #fb923c;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .upload-box {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 14px;
     }
 
-    input[type="file"] {
-      flex: 1;
-      min-width: 0;
-      font-size: 0.76rem;
-      color: #ffbe3b;
-      font-family: 'JetBrains Mono', monospace;
-      cursor: pointer;
-    }
-
-    input[type="file"]::file-selector-button {
-      background: linear-gradient(135deg, var(--fire-1), var(--fire-2));
+    .btn-upload {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
       color: #fff;
       border: none;
-      border-radius: 7px;
-      padding: 0.48rem 0.82rem;
-      margin-right: 0.65rem;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(255, 30, 66, 0.3);
-    }
-
-    .folder-list-box {
-      margin-top: 0.7rem;
-      padding: 0.65rem 0.78rem;
       border-radius: 8px;
-      background: rgba(5, 5, 8, 0.82);
-      border: 1px solid rgba(255, 190, 59, 0.25);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      line-height: 1.6;
-      color: #e2e8f0;
-      max-height: 140px;
-      overflow-y: auto;
-    }
-
-    .folder-list-head {
-      color: var(--gold);
+      padding: 9px 14px;
       font-weight: 700;
-      margin-bottom: 0.25rem;
-      display: block;
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
-    .folder-item-html { color: #ffb285; }
-    .folder-item-media { color: var(--cyan-soft); }
-
-    input[type="text"], textarea {
-      width: 100%; background: var(--input-bg); color: var(--text);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 0.8rem 0.9rem; font-size: 0.88rem; transition: border-color 0.2s, box-shadow 0.2s;
+    .file-name {
+      font-size: 0.85rem;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    textarea { min-height: 200px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.55; resize: vertical; }
-    input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.22); }
-
-    .actions { display: grid; grid-template-columns: 1fr; gap: 0.65rem; margin-top: 0.25rem; }
-
-    .btn {
-      width: 100%; appearance: none; border: none; border-radius: 10px;
-      padding: 0.82rem 1rem; font-size: 0.76rem; font-weight: 800;
-      letter-spacing: 0.09em; text-transform: uppercase; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-      transition: transform 0.14s ease, filter 0.2s ease;
+    textarea,
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      background: rgba(5, 6, 10, 0.75);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 12px;
+      font-size: 0.9rem;
+      outline: none;
     }
 
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn:active:not(:disabled) { transform: scale(0.98); }
-
-    .btn-fire { background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; box-shadow: 0 10px 24px rgba(255, 30, 66, 0.34); }
-    .btn-fire:hover:not(:disabled) { filter: brightness(1.08); }
-    .btn-ember { background: rgba(255, 85, 0, 0.12); color: #ffb285; border: 1px solid rgba(255, 85, 0, 0.5); }
-    .btn-dark { background: rgba(14, 14, 22, 0.95); color: var(--text); border: 1px solid var(--border); }
-    .btn-sm { width: auto; padding: 0.45rem 0.75rem; font-size: 0.68rem; border-radius: 7px; flex-shrink: 0; }
-
-    .publish-box { margin-top: 1rem; padding: 1rem; border-radius: 12px; background: rgba(7, 7, 12, 0.96); border: 1px solid rgba(255, 85, 0, 0.45); }
-    .output-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.85rem; }
-    .output-actions .btn { padding: 0.72rem 0.75rem; font-size: 0.72rem; line-height: 1.25; }
-    .publish-status { margin-top: 0.85rem; font-size: 0.8rem; line-height: 1.55; color: var(--muted); word-break: break-word; overflow-wrap: anywhere; }
-    .publish-status a { color: #ffb285; font-weight: 700; text-decoration: underline; }
-
-    .preview-controls { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
-    .preview-wrapper { width: 100%; display: flex; justify-content: center; }
-    .preview-frame { width: 100%; height: 440px; border: 1px solid var(--border); border-radius: 12px; background: #050508; transition: max-width 0.2s ease; }
-    .preview-frame.mobile-mode { max-width: 375px; }
-    .preview-empty {
-      height: 360px; border: 1px dashed rgba(255, 255, 255, 0.16); border-radius: 12px;
-      background: rgba(7, 7, 12, 0.75); display: flex; flex-direction: column; align-items: center;
-      justify-content: center; text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.86rem; gap: 0.4rem;
+    textarea {
+      min-height: 210px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      resize: vertical;
+      margin-bottom: 14px;
     }
 
-    .hidden { display: none !important; }
+    textarea:focus,
+    input:focus {
+      border-color: var(--accent-1);
+    }
+
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    .token-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-secondary-sm {
+      background: #1f2433;
+      color: var(--text);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 0 14px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-grad {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      color: #fff;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .btn-grad:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-dark {
+      width: 100%;
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 0.86rem;
+      letter-spacing: 0.4px;
+      color: var(--text);
+      background: rgba(15, 17, 24, 0.9);
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+
+    .status-text {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      min-height: 20px;
+      word-break: break-word;
+    }
+
+    .status-ok {
+      color: var(--ok);
+    }
+
+    .status-err {
+      color: var(--err);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .preview-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border-left: 3px solid var(--accent-1);
+      padding-left: 8px;
+    }
+
+    .preview-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chip-btn {
+      background: #1b1f2b;
+      color: var(--text);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chip-btn.active {
+      background: var(--accent-1);
+      border-color: var(--accent-1);
+      color: #fff;
+    }
+
+    .preview-stage {
+      display: flex;
+      justify-content: center;
+      background: #050608;
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 240px;
+    }
+
+    iframe#preview-frame {
+      width: 100%;
+      height: 360px;
+      border: none;
+      border-radius: 8px;
+      background: #ffffff;
+      transition: width 0.2s ease;
+    }
+
+    iframe#preview-frame.mode-hp {
+      width: 360px;
+      max-width: 100%;
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="card">
+      <div class="header-title">BUILDER WEB KE INDEX.HTML</div>
+      <div class="header-sub">Target: <strong>zikzapp/my-web</strong> → <code>index.html</code></div>
+    </div>
 
-  <div class="bg-base"></div>
-  <video id="bg-video" autoplay muted loop playsinline preload="auto" src="ssstik.io_1795312194787.mp4"></video>
-  <div class="bg-scrim"></div>
+    <div class="card">
+      <input type="file" id="file-input" accept=".html,.htm,.txt" hidden />
+      <div class="upload-box">
+        <button type="button" class="btn-upload" id="btn-pilih-file">PILIH FILE</button>
+        <span class="file-name" id="nama-file">Tidak ada file yang dipilih</span>
+      </div>
 
-  <!-- KOTAK LAYAR HP DI AWAL MASUK -->
-  <div id="phone-intro-overlay" class="phone-intro-overlay">
-    <div class="phone-frame">
-      <div>
-        <div class="phone-notch">
-          <span class="phone-speaker"></span>
-          <span class="phone-camera"></span>
-        </div>
+      <div class="label-row">
+        <span>KODE HTML / CSS / JS</span>
+        <button type="button" class="btn-link-inline" id="btn-hapus">[ HAPUS ]</button>
+      </div>
+      <textarea id="kode-html" placeholder="Tempel atau tulis kode HTML di sini..."></textarea>
 
-        <div class="phone-top-bar">
-          <span class="phone-chip" id="intro-chip-text">ZIKZ APP // INTRO</span>
-          <button type="button" class="btn-skip-top" onclick="skipPhoneIntro()">SKIP ⏭</button>
+      <div class="field-group">
+        <div class="label-row"><span>NAMA PROYEK</span></div>
+        <input type="text" id="nama-proyek" placeholder="Contoh: zikzproyek" />
+      </div>
+
+      <div class="field-group">
+        <div class="label-row"><span>GITHUB TOKEN (CONTENTS: READ &amp; WRITE)</span></div>
+        <div class="token-row">
+          <input type="password" id="gh-token" placeholder="Tempel token GitHub kamu..." />
+          <button type="button" class="btn-secondary-sm" id="btn-simpan-token">Simpan</button>
         </div>
       </div>
 
-      <div class="phone-screen-content">
-        <div class="phone-logo-mini">
-          <img src="HALO.png" alt="Logo ZIKZ APP">
-        </div>
-        <h2 class="phone-heading" id="intro-heading-text">SELAMAT DATANG DI ZIKZ APP</h2>
+      <button type="button" class="btn-grad" id="btn-preview">PREVIEW WEBSITE</button>
+      <button type="button" class="btn-dark" id="btn-download">DOWNLOAD HTML</button>
+      <button type="button" class="btn-grad" id="btn-buat-web">BUAT WEB NYA</button>
 
-        <p class="phone-paragraph" id="intro-paragraph-text">
-          Pilih 1 folder berisi kode HTML beserta foto, video, atau musik untuk dicek lewat Live Preview mode Full maupun HP, lalu unduh file HTML atau terbitkan langsung menjadi link web. Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.
-        </p>
-      </div>
-
-      <div class="phone-footer-actions">
-        <button type="button" class="btn btn-fire" id="intro-continue-btn" onclick="skipPhoneIntro()">
-          MASUK KE HALAMAN UTAMA ➔
-        </button>
-        <div class="phone-home-bar"></div>
-      </div>
-    </div>
-  </div>
-
-  <header class="hero-header">
-    <div class="logo-frame">
-      <div class="logo-box">
-        <img id="logo-img" class="logo-img" src="HALO.png" alt="Logo ZIKZ APP">
-      </div>
+      <div class="status-text" id="status-log">Token belum tersimpan di browser ini.</div>
     </div>
 
-    <div class="welcome-panel">
-      <h1 class="welcome-title">SELAMAT DATANG DI ZIKZ APP HTML TO WEB</h1>
-    </div>
-
-    <div class="status-pill">
-      <span class="status-dot"></span>
-      <span>ZIKZ SYSTEM READY</span>
-    </div>
-  </header>
-
-  <main id="screen-server-select" class="server-select-screen">
-    <div class="esports-server-btn" onclick="enterServer(1)">
-      <span class="esports-server-label">SERVER 1</span>
-      <span class="esports-server-tag">AKTIF</span>
-    </div>
-
-    <div class="esports-server-btn" onclick="openServer2Locked()">
-      <span class="esports-server-label">SERVER 2</span>
-      <span class="esports-server-tag">PROSES</span>
-    </div>
-
-    <div id="server2-locked-box" class="server2-lock-card hidden">
-      <div class="server2-lock-badge">TERKUNCI // SERVER 2</div>
-      <div class="server2-lock-title">Lagi Proses Perkembangan</div>
-      <p class="server2-lock-desc">Server 2 sedang dalam proses perkembangan dan belum bisa dibuka.</p>
-    </div>
-  </main>
-
-  <main id="screen-studio" class="container hidden">
-    <div>
-      <section class="panel">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span class="accent-bar"></span>
-            <span>INPUT 1 FOLDER &amp; KODE HTML</span>
-          </div>
-        </div>
-
-        <div class="server-banner">
-          <span class="server-banner-text" id="active-server-name">SERVER 1</span>
-          <button type="button" class="btn btn-dark btn-sm" onclick="backToSelectServer()">Ganti Server</button>
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="html-file">
-            <span>Pilih 1 Folder (isi HTML + foto/video/musik)</span>
-            <span class="folder-badge">1 FOLDER</span>
-          </label>
-          <div class="file-box">
-            <div class="file-picker-row">
-              <input type="file" id="html-file" webkitdirectory directory multiple onchange="handleFolderUpload(event)">
-            </div>
-            <div id="folder-contents-box" class="folder-list-box hidden"></div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="html-code">
-            <span>KODE HTML / CSS / JS</span>
-            <span style="font-size: 0.7rem; color: #ef4444; cursor: pointer;" onclick="clearCode()">[ HAPUS ]</span>
-          </label>
-          <textarea id="html-code" placeholder="<!DOCTYPE html>&#10;<html>&#10;<body>&#10;  <h1>ZIKZ APP READY</h1>&#10;</body>&#10;</html>"></textarea>
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="project-name">Nama Proyek</label>
-          <input type="text" id="project-name" placeholder="Contoh: zikzproyek">
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-fire" type="button" onclick="previewHTML()">Preview Website</button>
-          <button class="btn btn-dark" type="button" onclick="downloadHTML()">Download HTML</button>
-        </div>
-
-        <div class="publish-box">
-          <button class="btn btn-fire" id="btn-create-web" type="button" onclick="createWebsite()">
-            BUAT WEB NYA
-          </button>
-          <div id="publish-status" class="publish-status">Server aktif: SERVER 1</div>
-          <div id="published-link-actions" class="output-actions hidden">
-            <button class="btn btn-dark" type="button" onclick="copyPublishedUrl()">Salin Link</button>
-            <button class="btn btn-ember" type="button" onclick="openPublishedFresh()">Buka Tanpa Cache</button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <section class="panel">
-      <div class="panel-head">
-        <div class="panel-title">
-          <span class="accent-bar"></span>
-          <span>Live Preview</span>
-        </div>
+    <div class="card" id="preview-card">
+      <div class="preview-header">
+        <div class="preview-title">LIVE PREVIEW</div>
         <div class="preview-controls">
-          <button class="btn btn-dark btn-sm" type="button" onclick="setPreviewMode('full')">Full</button>
-          <button class="btn btn-dark btn-sm" type="button" onclick="setPreviewMode('mobile')">HP</button>
-          <button class="btn btn-dark btn-sm" type="button" onclick="resetPreview()">Tutup</button>
+          <button type="button" class="chip-btn active" id="mode-full">FULL</button>
+          <button type="button" class="chip-btn" id="mode-hp">HP</button>
+          <button type="button" class="chip-btn" id="mode-tutup">TUTUP</button>
         </div>
       </div>
-
-      <div id="preview-empty" class="preview-empty">
-        <strong>Belum Ada Pratinjau</strong>
+      <div class="preview-stage" id="preview-stage">
+        <iframe id="preview-frame" sandbox="allow-scripts allow-forms allow-modals"></iframe>
       </div>
-
-      <div class="preview-wrapper">
-        <iframe id="preview-iframe" class="preview-frame hidden" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
-      </div>
-    </section>
-  </main>
-
-  <div id="zikz-maintenance-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#050508;color:#f8fafc;align-items:center;justify-content:center;padding:1.5rem;text-align:center;">
-    <div style="max-width:480px;width:100%;background:#0d0d14;border:1px solid rgba(255,85,0,0.65);border-radius:16px;padding:2rem;box-shadow:0 20px 50px rgba(0,0,0,0.85);">
-      <div style="display:inline-block;font-size:0.72rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:#ffb285;border:1px solid rgba(255,85,0,0.5);padding:0.35rem 0.9rem;border-radius:6px;margin-bottom:1rem;">
-        SYSTEM MAINTENANCE
-      </div>
-      <h1 style="font-size:1.45rem;font-weight:800;margin-bottom:0.75rem;color:#fff;">
-        ZIKZ APP Sedang Diperbaiki
-      </h1>
-      <p id="zikz-maintenance-msg" style="font-size:0.9rem;line-height:1.6;color:#94a3b8;">
-        Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP.
-      </p>
     </div>
   </div>
 
   <script>
-    let lastPublishedUrl = '';
-    let folderEntries = [];
-    let entryHtmlRelPath = 'index.html';
-    let previewBlobUrls = [];
+    const OWNER = 'zikzapp';
+    const REPO = 'my-web';
+    const FILE_PATH = 'index.html';
+    const BRANCH = 'main';
+    const TOKEN_STORAGE_KEY = 'zikzapp_gh_token_index';
 
-    const DEFAULT_INTRO = {
-      enabled: true,
-      chip: 'ZIKZ APP // INTRO',
-      heading: 'SELAMAT DATANG DI ZIKZ APP',
-      paragraph: 'Pilih 1 folder berisi kode HTML beserta foto, video, atau musik untuk dicek lewat Live Preview mode Full maupun HP, lalu unduh file HTML atau terbitkan langsung menjadi link web. Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.',
-      buttonText: 'MASUK KE HALAMAN UTAMA ➔'
-    };
+    const fileInput = document.getElementById('file-input');
+    const btnPilihFile = document.getElementById('btn-pilih-file');
+    const namaFile = document.getElementById('nama-file');
+    const kodeHtml = document.getElementById('kode-html');
+    const namaProyek = document.getElementById('nama-proyek');
+    const ghTokenInput = document.getElementById('gh-token');
+    const btnSimpanToken = document.getElementById('btn-simpan-token');
+    const btnHapus = document.getElementById('btn-hapus');
+    const btnPreview = document.getElementById('btn-preview');
+    const btnDownload = document.getElementById('btn-download');
+    const btnBuatWeb = document.getElementById('btn-buat-web');
+    const statusLog = document.getElementById('status-log');
+    const previewFrame = document.getElementById('preview-frame');
+    const previewStage = document.getElementById('preview-stage');
+    const modeFull = document.getElementById('mode-full');
+    const modeHp = document.getElementById('mode-hp');
+    const modeTutup = document.getElementById('mode-tutup');
 
-    function applyIntroConfig(cfg) {
-      const overlay = document.getElementById('phone-intro-overlay');
-      if (!overlay) return;
+    function setStatus(msg, type = '') {
+      statusLog.textContent = msg;
+      statusLog.className = 'status-text' + (type ? ` status-${type}` : '');
+    }
 
-      const data = Object.assign({}, DEFAULT_INTRO, cfg || {});
-      if (data.enabled === false) {
-        overlay.classList.add('hidden');
+    function initToken() {
+      const saved = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (saved) {
+        ghTokenInput.value = saved;
+        setStatus('Token tersimpan di browser ini.', 'ok');
+      } else {
+        setStatus('Token belum tersimpan di browser ini.');
+      }
+    }
+
+    btnSimpanToken.addEventListener('click', () => {
+      const token = ghTokenInput.value.trim();
+      if (!token) {
+        setStatus('Masukkan token GitHub terlebih dahulu.', 'err');
         return;
       }
-
-      const combinedText = data.paragraph || [data.lead, data.body].filter(Boolean).join(' ') || DEFAULT_INTRO.paragraph;
-      document.getElementById('intro-chip-text').textContent = data.chip || DEFAULT_INTRO.chip;
-      document.getElementById('intro-heading-text').textContent = data.heading || DEFAULT_INTRO.heading;
-      document.getElementById('intro-paragraph-text').textContent = combinedText;
-      document.getElementById('intro-continue-btn').textContent = data.buttonText || DEFAULT_INTRO.buttonText;
-      overlay.classList.remove('hidden');
-    }
-
-    function skipPhoneIntro() {
-      const overlay = document.getElementById('phone-intro-overlay');
-      if (overlay) overlay.classList.add('hidden');
-    }
-
-    function sanitizeRepoString(val) {
-      if (!val) return '';
-      const trimmed = String(val).trim();
-      if (!trimmed || trimmed.includes('ZIKZ_EMBED_') || trimmed.includes('/*')) return '';
-      return trimmed;
-    }
-
-    function getRepoTarget() {
-      const host = window.location.hostname;
-      const pathParts = window.location.pathname.split('/').filter(p => p.length > 0);
-      let owner = 'stokemailzikzstr-coder';
-      let repo = 'my-web';
-
-      if (host.includes('github.io')) {
-        owner = host.split('.')[0] || owner;
-        repo = pathParts.length > 0 && !pathParts[0].endsWith('.html') ? pathParts[0] : `${owner}.github.io`;
-      }
-
-      const pagesBase = repo === `${owner}.github.io`
-        ? `https://${owner}.github.io`
-        : `https://${owner}.github.io/${repo}`;
-
-      return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
-    }
-
-    function getActiveRepoTarget() {
-      const base = getRepoTarget();
-      let customRepo = '';
-      try {
-        customRepo = sanitizeRepoString(localStorage.getItem('zikzapp_gh_repo_s1'));
-      } catch (err) {}
-
-      const chosen = customRepo || base.fullSlug;
-      const parts = chosen.split('/').filter(Boolean);
-
-      if (parts.length === 2) {
-        const [owner, repo] = parts;
-        const pagesBase = repo === `${owner}.github.io`
-          ? `https://${owner}.github.io`
-          : `https://${owner}.github.io/${repo}`;
-        return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
-      }
-
-      const repo = chosen;
-      const owner = base.owner;
-      const pagesBase = repo === `${owner}.github.io`
-        ? `https://${owner}.github.io`
-        : `https://${owner}.github.io/${repo}`;
-      return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
-    }
-
-    async function loadPhoneIntro() {
-      let localCfg = null;
-      try {
-        const rawLocal = localStorage.getItem('zikzapp_phone_intro_v1');
-        if (rawLocal) localCfg = JSON.parse(rawLocal);
-      } catch (err) {}
-
-      if (localCfg) applyIntroConfig(localCfg);
-
-      const { fullSlug } = getRepoTarget();
-      try {
-        const url = `https://raw.githubusercontent.com/${fullSlug}/HEAD/intro.json?t=${Date.now()}`;
-        const res = await fetch(url, { cache: 'no-store' });
-        if (res.ok) {
-          const remoteCfg = await res.json();
-          if (remoteCfg && typeof remoteCfg === 'object') {
-            applyIntroConfig(remoteCfg);
-            try { localStorage.setItem('zikzapp_phone_intro_v1', JSON.stringify(remoteCfg)); } catch (e) {}
-          }
-        }
-      } catch (err) {}
-    }
-
-    function openServer2Locked() {
-      const lockBox = document.getElementById('server2-locked-box');
-      if (lockBox) lockBox.classList.remove('hidden');
-    }
-
-    function enterServer(serverNum) {
-      if (serverNum !== 1) {
-        openServer2Locked();
-        return;
-      }
-      const lockBox = document.getElementById('server2-locked-box');
-      if (lockBox) lockBox.classList.add('hidden');
-      document.getElementById('screen-server-select').classList.add('hidden');
-      document.getElementById('screen-studio').classList.remove('hidden');
-      document.getElementById('active-server-name').textContent = 'SERVER 1';
-      document.getElementById('publish-status').textContent = 'Server aktif: SERVER 1';
-    }
-
-    function backToSelectServer() {
-      document.getElementById('screen-studio').classList.add('hidden');
-      document.getElementById('screen-server-select').classList.remove('hidden');
-    }
-
-    function getGitHubToken() {
-      try {
-        return (
-          localStorage.getItem('zikzapp_admin_token_v1') ||
-          localStorage.getItem('zikzapp_admin_token') ||
-          localStorage.getItem('zikzapp_gh_token') ||
-          ''
-        ).trim();
-      } catch (err) {
-        return '';
-      }
-    }
-
-    async function checkZikzMaintenance() {
-      const overlay = document.getElementById('zikz-maintenance-overlay');
-      const msgEl = document.getElementById('zikz-maintenance-msg');
-      const { fullSlug } = getRepoTarget();
-
-      try {
-        const url = `https://raw.githubusercontent.com/${fullSlug}/HEAD/maintenance.json?t=${Date.now()}`;
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) return;
-
-        const data = await res.json();
-        if (data && data.maintenance === true) {
-          if (data.message && msgEl) msgEl.textContent = data.message;
-          if (overlay) overlay.style.display = 'flex';
-        }
-      } catch (err) {}
-    }
-
-    function setPreviewMode(mode) {
-      const iframe = document.getElementById('preview-iframe');
-      if (mode === 'mobile') iframe.classList.add('mobile-mode');
-      else iframe.classList.remove('mobile-mode');
-    }
-
-    function clearPreviewBlobUrls() {
-      for (const u of previewBlobUrls) {
-        try { URL.revokeObjectURL(u); } catch (e) {}
-      }
-      previewBlobUrls = [];
-    }
-
-    function resetPreview() {
-      clearPreviewBlobUrls();
-      const iframe = document.getElementById('preview-iframe');
-      const emptyBox = document.getElementById('preview-empty');
-      iframe.srcdoc = '';
-      iframe.classList.add('hidden');
-      emptyBox.classList.remove('hidden');
-    }
-
-    function resetFolderState() {
-      clearPreviewBlobUrls();
-      folderEntries = [];
-      entryHtmlRelPath = 'index.html';
-      const box = document.getElementById('folder-contents-box');
-      if (box) {
-        box.innerHTML = '';
-        box.classList.add('hidden');
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const vid = document.getElementById('bg-video');
-      if (vid) {
-        vid.muted = true;
-        vid.play().catch(() => {});
-      }
-      loadPhoneIntro();
-      checkZikzMaintenance();
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      setStatus('Token tersimpan di browser ini.', 'ok');
     });
 
-    function toBase64Utf8(str) {
-      const bytes = new TextEncoder().encode(str);
-      let binary = '';
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      return btoa(binary);
+    btnPilihFile.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      namaFile.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        kodeHtml.value = ev.target.result;
+        renderPreview();
+      };
+      reader.readAsText(file);
+    });
+
+    btnHapus.addEventListener('click', () => {
+      kodeHtml.value = '';
+      fileInput.value = '';
+      namaFile.textContent = 'Tidak ada file yang dipilih';
+      previewFrame.srcdoc = '';
+      setStatus('Kode dikosongkan.');
+    });
+
+    function renderPreview() {
+      previewStage.style.display = 'flex';
+      modeTutup.classList.remove('active');
+      previewFrame.srcdoc = kodeHtml.value;
     }
 
-    function arrayBufferToBase64(buffer) {
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      const chunkSize = 0x8000;
-      for (let i = 0; i < bytes.length; i += chunkSize) {
-        const slice = bytes.subarray(i, i + chunkSize);
-        for (let j = 0; j < slice.length; j++) binary += String.fromCharCode(slice[j]);
-      }
-      return btoa(binary);
-    }
+    btnPreview.addEventListener('click', renderPreview);
 
-    async function handleFolderUpload(event) {
-      const files = Array.from(event.target.files || []);
-      const statusEl = document.getElementById('publish-status');
-      resetFolderState();
-      if (!files.length) return;
+    modeFull.addEventListener('click', () => {
+      previewStage.style.display = 'flex';
+      previewFrame.classList.remove('mode-hp');
+      modeFull.classList.add('active');
+      modeHp.classList.remove('active');
+      modeTutup.classList.remove('active');
+    });
 
-      const firstRel = files[0].webkitRelativePath || files[0].name;
-      const topFolder = firstRel.includes('/') ? firstRel.split('/')[0] : '';
+    modeHp.addEventListener('click', () => {
+      previewStage.style.display = 'flex';
+      previewFrame.classList.add('mode-hp');
+      modeHp.classList.add('active');
+      modeFull.classList.remove('active');
+      modeTutup.classList.remove('active');
+    });
 
-      if (topFolder && !document.getElementById('project-name').value.trim()) {
-        document.getElementById('project-name').value = topFolder;
-      }
+    modeTutup.addEventListener('click', () => {
+      previewStage.style.display = 'none';
+      modeTutup.classList.add('active');
+      modeFull.classList.remove('active');
+      modeHp.classList.remove('active');
+    });
 
-      let mainHtml = '';
-      let foundHtmlRel = '';
-
-      for (const file of files) {
-        const fullRel = (file.webkitRelativePath || file.name).replace(/^\/+/, '');
-        const relPath = topFolder && fullRel.startsWith(topFolder + '/')
-          ? fullRel.slice(topFolder.length + 1)
-          : fullRel;
-
-        if (!relPath || relPath.startsWith('.')) continue;
-        const isHtml = /\.html?$/i.test(relPath);
-
-        if (isHtml) {
-          const textContent = await file.text();
-          folderEntries.push({
-            relPath,
-            file,
-            isHtml: true,
-            textContent,
-            base64: null
-          });
-          if (!foundHtmlRel || /(^|\/)index\.html?$/i.test(relPath)) {
-            foundHtmlRel = relPath;
-            mainHtml = textContent;
-          }
-        } else {
-          folderEntries.push({
-            relPath,
-            file,
-            isHtml: false,
-            textContent: null,
-            base64: null
-          });
-        }
-      }
-
-      if (foundHtmlRel) {
-        entryHtmlRelPath = foundHtmlRel;
-        document.getElementById('html-code').value = mainHtml;
-      }
-
-      const box = document.getElementById('folder-contents-box');
-      box.classList.remove('hidden');
-      const itemsHtml = folderEntries
-        .map(e => `<div class="${e.isHtml ? 'folder-item-html' : 'folder-item-media'}">• ${e.relPath}</div>`)
-        .join('');
-      box.innerHTML = `<span class="folder-list-head">Folder "${topFolder || 'Terpilih'}" (${folderEntries.length} file)</span>${itemsHtml}`;
-
-      statusEl.textContent = `Folder terbaca (${folderEntries.length} file).`;
-      previewHTML();
-    }
-
-    function buildPreviewHtml(rawCode) {
-      clearPreviewBlobUrls();
-      let out = rawCode;
-      for (const item of folderEntries) {
-        if (item.isHtml || !item.file) continue;
-        const blobUrl = URL.createObjectURL(item.file);
-        previewBlobUrls.push(blobUrl);
-        const escaped = item.relPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        out = out.replace(new RegExp(`(["'])(\\.\\/)?${escaped}\\1`, 'g'), `$1${blobUrl}$1`);
-      }
-      return out;
-    }
-
-    function previewHTML() {
-      const code = document.getElementById('html-code').value;
-      const iframe = document.getElementById('preview-iframe');
-      const emptyBox = document.getElementById('preview-empty');
-      if (!code.trim()) return;
-      emptyBox.classList.add('hidden');
-      iframe.classList.remove('hidden');
-      iframe.srcdoc = buildPreviewHtml(code);
-    }
-
-    function buildSlug(rawValue) {
-      const clean = (rawValue || '')
-        .trim()
-        .toLowerCase()
-        .replace(/\.html?$/i, '')
-        .replace(/[^a-z0-9-]/g, '');
-      return clean || ('proyek-' + Math.floor(1000 + Math.random() * 9000));
-    }
-
-    async function putRepoFile(fullSlug, token, repoPath, base64Content, commitMsg) {
-      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${repoPath}`;
-      let sha = null;
-      const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-        cache: 'no-store'
-      });
-      if (checkRes.ok) {
-        const existingData = await checkRes.json();
-        sha = existingData.sha;
-      }
-
-      const payload = { message: commitMsg, content: base64Content };
-      if (sha) payload.sha = sha;
-
-      const putRes = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/vnd.github+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await putRes.json();
-      if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
-    }
-
-    async function publishToGitHub(code, slug, statusEl) {
-      const token = getGitHubToken();
-      if (!token) {
-        statusEl.textContent = 'Token belum tersimpan di browser ini.';
-        return null;
-      }
-
-      const { fullSlug, pagesBase } = getActiveRepoTarget();
-      const hasAssets = folderEntries.some(e => !e.isHtml);
-
-      if (hasAssets) {
-        const queue = [];
-        for (const item of folderEntries) {
-          if (item.isHtml) {
-            const content = item.relPath === entryHtmlRelPath && code.trim() ? code : item.textContent;
-            queue.push({ repoPath: `${slug}/${item.relPath}`, base64: toBase64Utf8(content) });
-          } else {
-            if (item.file && item.file.size > 24 * 1024 * 1024) {
-              throw new Error(`File "${item.relPath}" terlalu besar (>24 MB).`);
-            }
-            const buf = await item.file.arrayBuffer();
-            queue.push({ repoPath: `${slug}/${item.relPath}`, base64: arrayBufferToBase64(buf) });
-          }
-        }
-        if (!queue.some(q => q.repoPath === `${slug}/${entryHtmlRelPath}`)) {
-          queue.unshift({ repoPath: `${slug}/${entryHtmlRelPath}`, base64: toBase64Utf8(code) });
-        }
-
-        const checkRes = await fetch(`https://api.github.com/repos/${fullSlug}/contents/${slug}/${entryHtmlRelPath}?t=${Date.now()}`, {
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-          cache: 'no-store'
-        });
-        if (checkRes.ok && !confirm(`Timpa folder "${slug}"?`)) {
-          statusEl.textContent = 'Dibatalkan.';
-          return null;
-        }
-
-        for (let i = 0; i < queue.length; i++) {
-          statusEl.textContent = `Mengupload (${i + 1}/${queue.length}): ${queue[i].repoPath}...`;
-          await putRepoFile(fullSlug, token, queue[i].repoPath, queue[i].base64, `Publish ${queue[i].repoPath} via ZIKZ APP`);
-        }
-        return `${pagesBase}/${slug}/${entryHtmlRelPath}`;
-      }
-
-      const fileName = `${slug}.html`;
-      const checkRes = await fetch(`https://api.github.com/repos/${fullSlug}/contents/${fileName}?t=${Date.now()}`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-        cache: 'no-store'
-      });
-
-      if (checkRes.ok && !confirm(`Timpa "${fileName}"?`)) {
-        statusEl.textContent = 'Dibatalkan.';
-        return null;
-      }
-
-      await putRepoFile(fullSlug, token, fileName, toBase64Utf8(code), `Publish ${fileName} via ZIKZ APP`);
-      return `${pagesBase}/${fileName}`;
-    }
-
-    async function createWebsite() {
-      const code = document.getElementById('html-code').value;
-      const statusEl = document.getElementById('publish-status');
-      const btn = document.getElementById('btn-create-web');
-      const linkActions = document.getElementById('published-link-actions');
-      const rawName = document.getElementById('project-name').value.trim();
-
-      if (!code.trim()) {
-        statusEl.textContent = 'Kode HTML masih kosong.';
+    btnDownload.addEventListener('click', () => {
+      const isi = kodeHtml.value;
+      if (!isi.trim()) {
+        setStatus('Tidak ada kode HTML untuk diunduh.', 'err');
         return;
       }
-
-      btn.disabled = true;
-      linkActions.classList.add('hidden');
-      statusEl.textContent = 'Sedang membuat link web...';
-
-      try {
-        const slug = buildSlug(rawName);
-        const publishedUrl = await publishToGitHub(code, slug, statusEl);
-
-        if (!publishedUrl) return;
-
-        lastPublishedUrl = publishedUrl;
-        linkActions.classList.remove('hidden');
-        statusEl.innerHTML = `Berhasil dibuat: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
-      } catch (err) {
-        statusEl.textContent = `Gagal: ${err.message}`;
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    function openPublishedFresh() {
-      if (!lastPublishedUrl) return;
-      const sep = lastPublishedUrl.includes('?') ? '&' : '?';
-      window.open(`${lastPublishedUrl}${sep}v=${Date.now()}`, '_blank', 'noopener,noreferrer');
-    }
-
-    function copyPublishedUrl() {
-      if (!lastPublishedUrl) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(lastPublishedUrl).catch(() => {});
-      }
-    }
-
-    function downloadHTML() {
-      const code = document.getElementById('html-code').value;
-      if (!code.trim()) return;
-      const slug = buildSlug(document.getElementById('project-name').value);
-      const blob = new Blob([code], { type: 'text/html' });
+      const slug = (namaProyek.value.trim() || 'index')
+        .toLowerCase()
+        .replace(/[^a-z0-9-_]/g, '-');
+      const blob = new Blob([isi], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `${slug}.html`;
       a.click();
       URL.revokeObjectURL(url);
+      setStatus(`File ${slug}.html berhasil diunduh.`, 'ok');
+    });
+
+    function toBase64Utf8(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = '';
+      for (let i = 0; i < bytes.length; i++) {
+        bin += String.fromCharCode(bytes[i]);
+      }
+      return btoa(bin);
     }
 
-    function clearCode() {
-      document.getElementById('html-code').value = '';
-      document.getElementById('html-file').value = '';
-      document.getElementById('project-name').value = '';
-      resetFolderState();
-      resetPreview();
-      document.getElementById('published-link-actions').classList.add('hidden');
-      document.getElementById('publish-status').textContent = 'Server aktif: SERVER 1';
+    async function getExistingFileSha(token) {
+      const endpoint = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}?ref=${encodeURIComponent(BRANCH)}`;
+      const res = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json'
+        }
+      });
+      if (res.status === 404) return null;
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `Gagal membaca ${FILE_PATH} (${res.status})`);
+      }
+      const data = await res.json();
+      return data.sha;
     }
+
+    btnBuatWeb.addEventListener('click', async () => {
+      const htmlContent = kodeHtml.value;
+      const token = (localStorage.getItem(TOKEN_STORAGE_KEY) || ghTokenInput.value).trim();
+      const projectLabel = namaProyek.value.trim() || 'dashboard';
+
+      if (!htmlContent.trim()) {
+        setStatus('Kode HTML masih kosong.', 'err');
+        return;
+      }
+
+      if (!token) {
+        setStatus('Token belum tersimpan di browser ini.', 'err');
+        return;
+      }
+
+      btnBuatWeb.disabled = true;
+      try {
+        setStatus(`Mengecek ${FILE_PATH} di ${OWNER}/${REPO}...`);
+        const sha = await getExistingFileSha(token);
+
+        setStatus(`Menyimpan kode ke ${FILE_PATH}...`);
+        const body = {
+          message: `Update ${FILE_PATH} (${projectLabel}) via dashboard`,
+          content: toBase64Utf8(htmlContent),
+          branch: BRANCH
+        };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        const putData = await putRes.json().catch(() => ({}));
+        if (!putRes.ok) {
+          throw new Error(putData.message || `Gagal menyimpan (${putRes.status})`);
+        }
+
+        setStatus(
+          `Berhasil disimpan ke index.html! Aktif di https://${OWNER}.github.io/${REPO}/ (tunggu 1-2 menit).`,
+          'ok'
+        );
+      } catch (err) {
+        setStatus(`Gagal: ${err.message}`, 'err');
+      } finally {
+        btnBuatWeb.disabled = false;
+      }
+    });
+
+    initToken();
   </script>
 </body>
 </html>

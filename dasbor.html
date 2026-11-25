@@ -52,9 +52,7 @@
       display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;
     }
 
-    .brand {
-      display: flex; align-items: center; gap: 0.7rem;
-    }
+    .brand { display: flex; align-items: center; gap: 0.7rem; }
 
     .brand-logo {
       width: 44px; height: 44px; border-radius: 12px; padding: 2px;
@@ -62,9 +60,7 @@
       flex-shrink: 0;
     }
 
-    .brand-logo img {
-      width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block;
-    }
+    .brand-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
 
     .brand-title {
       font-size: 1rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
@@ -72,9 +68,7 @@
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    .brand-sub {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted);
-    }
+    .brand-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); }
 
     .container {
       max-width: 920px; margin: 0 auto; padding: 0.75rem 1rem 3rem;
@@ -165,6 +159,7 @@
     .ok { color: #4ade80; }
     .warn { color: #ffbe3b; }
     .err { color: #f87171; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -197,12 +192,18 @@
 
       <div class="field">
         <label class="field-label" for="gh-repo">Target Repo (owner/repo)</label>
-        <input type="text" id="gh-repo" placeholder="Contoh: stokemailzikzstr-coder/my-web">
+        <input type="text" id="gh-repo" placeholder="Contoh: zikzapp/my-web">
       </div>
 
       <div class="btn-row">
         <button class="btn btn-fire" type="button" onclick="saveConnection()">Simpan Lokal</button>
         <button class="btn btn-dark" type="button" onclick="clearToken()">Hapus Token</button>
+      </div>
+
+      <div class="btn-row" style="margin-top: 0.55rem;">
+        <button class="btn btn-ember" type="button" onclick="exportConfigFile()">Export Backup</button>
+        <button class="btn btn-dark" type="button" onclick="document.getElementById('import-file').click()">Import Backup</button>
+        <input type="file" id="import-file" class="hidden" accept=".json,application/json" onchange="importConfigFile(event)">
       </div>
 
       <div class="status-box" id="conn-status">Menunggu pengaturan koneksi...</div>
@@ -278,7 +279,7 @@
     function detectDefaultRepo() {
       const host = window.location.hostname;
       const parts = window.location.pathname.split('/').filter(Boolean);
-      let owner = 'stokemailzikzstr-coder';
+      let owner = 'zikzapp';
       let repo = 'my-web';
       if (host.includes('github.io')) {
         owner = host.split('.')[0] || owner;
@@ -361,6 +362,62 @@
       document.getElementById('intro-status').innerHTML = `<span class="ok">Intro HP disimpan lokal</span> (tampil: ${payload.enabled}).`;
     }
 
+    function exportConfigFile() {
+      const bundle = {
+        token: getToken(),
+        repo: getTargetRepo(),
+        maintenance: getMaintenancePayload(),
+        intro: getIntroPayload()
+      };
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'zikzapp-dasbor-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById('conn-status').innerHTML = `<span class="ok">File backup diunduh.</span> Simpan di tempat aman dan import di browser lain.`;
+    }
+
+    async function importConfigFile(event) {
+      const file = event.target.files && event.target.files[0];
+      const status = document.getElementById('conn-status');
+      if (!file) return;
+
+      try {
+        const parsed = JSON.parse(await file.text());
+        if (parsed.token) {
+          document.getElementById('gh-token').value = parsed.token;
+          localStorage.setItem('zikzapp_admin_token_v1', parsed.token);
+          localStorage.setItem('zikzapp_admin_token', parsed.token);
+          localStorage.setItem('zikzapp_gh_token', parsed.token);
+        }
+        if (parsed.repo) {
+          document.getElementById('gh-repo').value = parsed.repo;
+          localStorage.setItem('zikzapp_gh_repo_s1', parsed.repo);
+        }
+        if (parsed.maintenance) {
+          document.getElementById('maint-enabled').checked = Boolean(parsed.maintenance.maintenance);
+          if (parsed.maintenance.message) document.getElementById('maint-msg').value = parsed.maintenance.message;
+          localStorage.setItem('zikzapp_maintenance_v1', JSON.stringify(parsed.maintenance));
+        }
+        if (parsed.intro) {
+          document.getElementById('intro-enabled').checked = parsed.intro.enabled !== false;
+          if (parsed.intro.chip) document.getElementById('intro-chip').value = parsed.intro.chip;
+          if (parsed.intro.heading) document.getElementById('intro-heading').value = parsed.intro.heading;
+          if (parsed.intro.buttonText) document.getElementById('intro-btn').value = parsed.intro.buttonText;
+          if (parsed.intro.paragraph) document.getElementById('intro-paragraph').value = parsed.intro.paragraph;
+          localStorage.setItem('zikzapp_phone_intro_v1', JSON.stringify(parsed.intro));
+        }
+        refreshRepoLabel();
+        status.innerHTML = `<span class="ok">Backup berhasil di-import ke browser ini.</span>`;
+      } catch (err) {
+        status.innerHTML = `<span class="err">Gagal import:</span> File JSON tidak valid.`;
+      } finally {
+        event.target.value = '';
+      }
+    }
+
     function toBase64Utf8(str) {
       const bytes = new TextEncoder().encode(str);
       let bin = '';
@@ -373,8 +430,13 @@
       const token = getToken();
       const repo = getTargetRepo();
 
+      if (!repo || !repo.includes('/')) {
+        statusEl.innerHTML = `<span class="err">Gagal: Format repo salah.</span> Gunakan format username/namarepo (contoh: zikzapp/my-web).`;
+        return;
+      }
+
       if (!token) {
-        statusEl.innerHTML = `<span class="err">Token belum diisi.</span> Isi token di kartu Koneksi GitHub lalu klik Simpan Lokal.`;
+        statusEl.innerHTML = `<span class="err">Gagal: Token belum diisi.</span> Isi token di kartu Koneksi GitHub lalu klik Simpan Lokal.`;
         return;
       }
 
@@ -387,6 +449,7 @@
           headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
           cache: 'no-store'
         });
+
         if (getRes.ok) {
           const existing = await getRes.json();
           sha = existing.sha;
@@ -413,7 +476,11 @@
 
         statusEl.innerHTML = `<span class="ok">Berhasil push ${filename}</span> ke ${repo}.`;
       } catch (err) {
-        statusEl.innerHTML = `<span class="err">Gagal:</span> ${err.message}`;
+        if (err.message.includes('Failed to fetch')) {
+          statusEl.innerHTML = `<span class="err">Gagal: Koneksi terputus.</span> Periksa koneksi internet HP atau nama repo (${repo}).`;
+        } else {
+          statusEl.innerHTML = `<span class="err">Gagal:</span> ${err.message}`;
+        }
       }
     }
 

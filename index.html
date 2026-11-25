@@ -15,6 +15,7 @@
       --fire-1: #ff5500;
       --fire-2: #ff1e42;
       --gold: #ffbe3b;
+      --cyan-soft: #38bdf8;
       --text: #f8fafc;
       --muted: #94a3b8;
     }
@@ -65,7 +66,7 @@
       width: 100%;
       max-width: 344px;
       height: auto;
-      min-height: 460px;
+      min-height: 440px;
       max-height: 90vh;
       background:
         radial-gradient(circle at 50% 0%, rgba(255, 85, 0, 0.2), transparent 58%),
@@ -80,7 +81,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 0.55rem;
+      gap: 0.65rem;
       position: relative;
       overflow: hidden;
     }
@@ -156,14 +157,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.58rem;
-      padding: 0.2rem 0.15rem;
+      justify-content: center;
+      gap: 0.7rem;
+      padding: 0.25rem 0.15rem;
       overflow-y: auto;
     }
 
     .phone-logo-mini {
-      width: 62px;
-      height: 62px;
+      width: 66px;
+      height: 66px;
       border-radius: 16px;
       padding: 2px;
       flex-shrink: 0;
@@ -191,61 +193,17 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .phone-lead {
+    .phone-paragraph {
       width: 100%;
-      font-size: 0.77rem;
-      line-height: 1.45;
-      color: #f1f5f9;
-      text-align: left;
-      padding: 0.52rem 0.68rem;
-      border-radius: 10px;
-      background: rgba(255, 85, 0, 0.09);
-      border-left: 3px solid var(--fire-1);
-    }
-
-    .phone-feature-list {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .phone-feature-item {
-      display: flex;
-      align-items: center;
-      gap: 0.52rem;
-      padding: 0.46rem 0.62rem;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      text-align: left;
-      font-size: 0.74rem;
-      line-height: 1.35;
+      font-size: 0.8rem;
+      line-height: 1.6;
       color: #e2e8f0;
-    }
-
-    .phone-feature-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.64rem;
-      font-weight: 700;
-      color: #050508;
-      background: linear-gradient(135deg, var(--gold), var(--fire-1));
-      padding: 0.16rem 0.42rem;
-      border-radius: 6px;
-      flex-shrink: 0;
-    }
-
-    .phone-custom-text {
-      width: 100%;
-      font-size: 0.74rem;
-      line-height: 1.48;
-      color: #cbd5e1;
       text-align: left;
-      white-space: pre-line;
-      background: rgba(5, 5, 8, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 10px;
-      padding: 0.55rem 0.68rem;
+      padding: 0.72rem 0.8rem;
+      border-radius: 12px;
+      background: rgba(255, 85, 0, 0.08);
+      border: 1px solid rgba(255, 110, 40, 0.32);
+      border-left: 3px solid var(--fire-1);
     }
 
     .phone-footer-actions {
@@ -376,6 +334,47 @@
       border: 1px solid rgba(255, 190, 59, 0.35); padding: 0.25rem 0.55rem; border-radius: 6px;
     }
 
+    .server2-lock-card {
+      margin-top: 0.25rem;
+      background: linear-gradient(165deg, rgba(24, 14, 18, 0.96), rgba(8, 8, 13, 0.98));
+      border: 1px solid rgba(255, 30, 66, 0.55);
+      border-left: 4px solid var(--fire-2);
+      border-radius: 14px;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.78);
+    }
+
+    .server2-lock-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ffbe3b;
+      background: rgba(255, 30, 66, 0.14);
+      border: 1px solid rgba(255, 30, 66, 0.45);
+      padding: 0.24rem 0.65rem;
+      border-radius: 6px;
+      margin-bottom: 0.65rem;
+    }
+
+    .server2-lock-title {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .server2-lock-desc {
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
     .container {
       max-width: 1120px; margin: 0 auto; padding: 1rem 1rem 2.5rem;
       display: grid; grid-template-columns: 1fr; gap: 1.15rem;
@@ -404,28 +403,98 @@
     .accent-bar { width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(180deg, var(--gold), var(--fire-1), var(--fire-2)); }
 
     .server-banner {
-      display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.65rem;
       background: rgba(255, 85, 0, 0.09); border: 1px solid rgba(255, 85, 0, 0.38);
-      border-left: 3px solid var(--fire-1); border-radius: 10px; padding: 0.7rem 0.85rem; margin-bottom: 1rem;
+      border-left: 3px solid var(--fire-1); border-radius: 10px; padding: 0.72rem 0.85rem; margin-bottom: 1rem;
     }
 
-    .server-banner-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #ffb285; text-transform: uppercase; }
+    .server-banner-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; font-weight: 700;
+      color: #ffb285; text-transform: uppercase; letter-spacing: 0.04em;
+    }
 
     .field { margin-bottom: 1rem; }
 
     .field-label {
       display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 0.45rem; gap: 0.5rem; flex-wrap: wrap;
+      font-size: 0.73rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #e2e8f0; margin-bottom: 0.5rem; gap: 0.5rem; line-height: 1.35;
     }
 
-    .file-box { background: var(--input-bg); border: 1px solid rgba(255, 85, 0, 0.4); border-radius: 10px; padding: 0.65rem 0.75rem; }
-    input[type="file"] { width: 100%; font-size: 0.8rem; color: var(--muted); cursor: pointer; }
-    input[type="file"]::file-selector-button {
-      background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; border: none;
-      border-radius: 6px; padding: 0.45rem 0.8rem; margin-right: 0.65rem; font-size: 0.72rem;
-      font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    .folder-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #050508;
+      background: linear-gradient(135deg, var(--gold), var(--fire-1));
+      padding: 0.22rem 0.55rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
+
+    .file-box {
+      background: linear-gradient(180deg, rgba(16, 12, 22, 0.95), rgba(7, 7, 12, 0.98));
+      border: 1px solid rgba(255, 190, 59, 0.35);
+      border-left: 3px solid var(--gold);
+      border-radius: 10px;
+      padding: 0.72rem 0.8rem;
+    }
+
+    .file-picker-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    input[type="file"] {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.76rem;
+      color: #ffbe3b;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, var(--fire-1), var(--fire-2));
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 0.48rem 0.82rem;
+      margin-right: 0.65rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 30, 66, 0.3);
+    }
+
+    .folder-list-box {
+      margin-top: 0.7rem;
+      padding: 0.65rem 0.78rem;
+      border-radius: 8px;
+      background: rgba(5, 5, 8, 0.82);
+      border: 1px solid rgba(255, 190, 59, 0.25);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .folder-list-head {
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    .folder-item-html { color: #ffb285; }
+    .folder-item-media { color: var(--cyan-soft); }
 
     input[type="text"], textarea {
       width: 100%; background: var(--input-bg); color: var(--text);
@@ -433,7 +502,7 @@
       padding: 0.8rem 0.9rem; font-size: 0.88rem; transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    textarea { min-height: 220px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.55; resize: vertical; }
+    textarea { min-height: 200px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.55; resize: vertical; }
     input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.22); }
 
     .actions { display: grid; grid-template-columns: 1fr; gap: 0.65rem; margin-top: 0.25rem; }
@@ -453,7 +522,7 @@
     .btn-fire:hover:not(:disabled) { filter: brightness(1.08); }
     .btn-ember { background: rgba(255, 85, 0, 0.12); color: #ffb285; border: 1px solid rgba(255, 85, 0, 0.5); }
     .btn-dark { background: rgba(14, 14, 22, 0.95); color: var(--text); border: 1px solid var(--border); }
-    .btn-sm { width: auto; padding: 0.42rem 0.72rem; font-size: 0.7rem; border-radius: 7px; }
+    .btn-sm { width: auto; padding: 0.45rem 0.75rem; font-size: 0.68rem; border-radius: 7px; flex-shrink: 0; }
 
     .publish-box { margin-top: 1rem; padding: 1rem; border-radius: 12px; background: rgba(7, 7, 12, 0.96); border: 1px solid rgba(255, 85, 0, 0.45); }
     .output-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.85rem; }
@@ -501,30 +570,9 @@
         </div>
         <h2 class="phone-heading" id="intro-heading-text">SELAMAT DATANG DI ZIKZ APP</h2>
 
-        <div class="phone-lead" id="intro-lead-text">
-          Ubah kode HTML, CSS &amp; JS menjadi halaman web siap pratinjau dan siap terbit.
-        </div>
-
-        <div class="phone-feature-list">
-          <div class="phone-feature-item">
-            <span class="phone-feature-num" id="intro-num-1">01</span>
-            <span id="intro-item-1">Upload file .html / .htm atau tulis kode langsung</span>
-          </div>
-          <div class="phone-feature-item">
-            <span class="phone-feature-num" id="intro-num-2">02</span>
-            <span id="intro-item-2">Cek Live Preview mode Full maupun HP</span>
-          </div>
-          <div class="phone-feature-item">
-            <span class="phone-feature-num" id="intro-num-3">03</span>
-            <span id="intro-item-3">Download HTML atau buat link web publik</span>
-          </div>
-          <div class="phone-feature-item">
-            <span class="phone-feature-num" id="intro-num-4">04</span>
-            <span id="intro-item-4">Atur Maintenance &amp; intro dari dasbor</span>
-          </div>
-        </div>
-
-        <div class="phone-custom-text" id="intro-body-text">Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.</div>
+        <p class="phone-paragraph" id="intro-paragraph-text">
+          Pilih 1 folder berisi kode HTML beserta foto, video, atau musik untuk dicek lewat Live Preview mode Full maupun HP, lalu unduh file HTML atau terbitkan langsung menjadi link web. Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.
+        </p>
       </div>
 
       <div class="phone-footer-actions">
@@ -556,12 +604,18 @@
   <main id="screen-server-select" class="server-select-screen">
     <div class="esports-server-btn" onclick="enterServer(1)">
       <span class="esports-server-label">SERVER 1</span>
-      <span class="esports-server-tag">GITHUB</span>
+      <span class="esports-server-tag">AKTIF</span>
     </div>
 
-    <div class="esports-server-btn" onclick="enterServer(2)">
+    <div class="esports-server-btn" onclick="openServer2Locked()">
       <span class="esports-server-label">SERVER 2</span>
-      <span class="esports-server-tag">NETLIFY</span>
+      <span class="esports-server-tag">PROSES</span>
+    </div>
+
+    <div id="server2-locked-box" class="server2-lock-card hidden">
+      <div class="server2-lock-badge">TERKUNCI // SERVER 2</div>
+      <div class="server2-lock-title">Lagi Proses Perkembangan</div>
+      <p class="server2-lock-desc">Server 2 sedang dalam proses perkembangan dan belum bisa dibuka.</p>
     </div>
   </main>
 
@@ -571,19 +625,25 @@
         <div class="panel-head">
           <div class="panel-title">
             <span class="accent-bar"></span>
-            <span>INPUT &amp; KODE HTML</span>
+            <span>INPUT 1 FOLDER &amp; KODE HTML</span>
           </div>
         </div>
 
         <div class="server-banner">
-          <span class="server-banner-text" id="active-server-name">SERVER 1 (GITHUB)</span>
+          <span class="server-banner-text" id="active-server-name">SERVER 1</span>
           <button type="button" class="btn btn-dark btn-sm" onclick="backToSelectServer()">Ganti Server</button>
         </div>
 
         <div class="field">
-          <label class="field-label" for="html-file">Unggah File (.html / .htm)</label>
+          <label class="field-label" for="html-file">
+            <span>Pilih 1 Folder (isi HTML + foto/video/musik)</span>
+            <span class="folder-badge">1 FOLDER</span>
+          </label>
           <div class="file-box">
-            <input type="file" id="html-file" accept=".html,.htm" onchange="handleFileUpload(event)">
+            <div class="file-picker-row">
+              <input type="file" id="html-file" webkitdirectory directory multiple onchange="handleFolderUpload(event)">
+            </div>
+            <div id="folder-contents-box" class="folder-list-box hidden"></div>
           </div>
         </div>
 
@@ -609,7 +669,7 @@
           <button class="btn btn-fire" id="btn-create-web" type="button" onclick="createWebsite()">
             BUAT WEB NYA
           </button>
-          <div id="publish-status" class="publish-status">Server aktif: SERVER 1 (GITHUB)</div>
+          <div id="publish-status" class="publish-status">Server aktif: SERVER 1</div>
           <div id="published-link-actions" class="output-actions hidden">
             <button class="btn btn-dark" type="button" onclick="copyPublishedUrl()">Salin Link</button>
             <button class="btn btn-ember" type="button" onclick="openPublishedFresh()">Buka Tanpa Cache</button>
@@ -656,19 +716,16 @@
   </div>
 
   <script>
-    let activeServer = 1;
     let lastPublishedUrl = '';
+    let folderEntries = [];
+    let entryHtmlRelPath = 'index.html';
+    let previewBlobUrls = [];
 
     const DEFAULT_INTRO = {
       enabled: true,
       chip: 'ZIKZ APP // INTRO',
       heading: 'SELAMAT DATANG DI ZIKZ APP',
-      lead: 'Ubah kode HTML, CSS & JS menjadi halaman web siap pratinjau dan siap terbit.',
-      num1: '01', item1: 'Upload file .html / .htm atau tulis kode langsung',
-      num2: '02', item2: 'Cek Live Preview mode Full maupun HP',
-      num3: '03', item3: 'Download HTML atau buat link web publik',
-      num4: '04', item4: 'Atur Maintenance & intro dari dasbor',
-      body: 'Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.',
+      paragraph: 'Pilih 1 folder berisi kode HTML beserta foto, video, atau musik untuk dicek lewat Live Preview mode Full maupun HP, lalu unduh file HTML atau terbitkan langsung menjadi link web. Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.',
       buttonText: 'MASUK KE HALAMAN UTAMA ➔'
     };
 
@@ -682,23 +739,10 @@
         return;
       }
 
+      const combinedText = data.paragraph || [data.lead, data.body].filter(Boolean).join(' ') || DEFAULT_INTRO.paragraph;
       document.getElementById('intro-chip-text').textContent = data.chip || DEFAULT_INTRO.chip;
       document.getElementById('intro-heading-text').textContent = data.heading || DEFAULT_INTRO.heading;
-      document.getElementById('intro-lead-text').textContent = data.lead || DEFAULT_INTRO.lead;
-
-      document.getElementById('intro-num-1').textContent = data.num1 || DEFAULT_INTRO.num1;
-      document.getElementById('intro-item-1').textContent = data.item1 || DEFAULT_INTRO.item1;
-
-      document.getElementById('intro-num-2').textContent = data.num2 || DEFAULT_INTRO.num2;
-      document.getElementById('intro-item-2').textContent = data.item2 || DEFAULT_INTRO.item2;
-
-      document.getElementById('intro-num-3').textContent = data.num3 || DEFAULT_INTRO.num3;
-      document.getElementById('intro-item-3').textContent = data.item3 || DEFAULT_INTRO.item3;
-
-      document.getElementById('intro-num-4').textContent = data.num4 || DEFAULT_INTRO.num4;
-      document.getElementById('intro-item-4').textContent = data.item4 || DEFAULT_INTRO.item4;
-
-      document.getElementById('intro-body-text').textContent = data.body || DEFAULT_INTRO.body;
+      document.getElementById('intro-paragraph-text').textContent = combinedText;
       document.getElementById('intro-continue-btn').textContent = data.buttonText || DEFAULT_INTRO.buttonText;
       overlay.classList.remove('hidden');
     }
@@ -706,6 +750,13 @@
     function skipPhoneIntro() {
       const overlay = document.getElementById('phone-intro-overlay');
       if (overlay) overlay.classList.add('hidden');
+    }
+
+    function sanitizeRepoString(val) {
+      if (!val) return '';
+      const trimmed = String(val).trim();
+      if (!trimmed || trimmed.includes('ZIKZ_EMBED_') || trimmed.includes('/*')) return '';
+      return trimmed;
     }
 
     function getRepoTarget() {
@@ -723,6 +774,32 @@
         ? `https://${owner}.github.io`
         : `https://${owner}.github.io/${repo}`;
 
+      return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
+    }
+
+    function getActiveRepoTarget() {
+      const base = getRepoTarget();
+      let customRepo = '';
+      try {
+        customRepo = sanitizeRepoString(localStorage.getItem('zikzapp_gh_repo_s1'));
+      } catch (err) {}
+
+      const chosen = customRepo || base.fullSlug;
+      const parts = chosen.split('/').filter(Boolean);
+
+      if (parts.length === 2) {
+        const [owner, repo] = parts;
+        const pagesBase = repo === `${owner}.github.io`
+          ? `https://${owner}.github.io`
+          : `https://${owner}.github.io/${repo}`;
+        return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
+      }
+
+      const repo = chosen;
+      const owner = base.owner;
+      const pagesBase = repo === `${owner}.github.io`
+        ? `https://${owner}.github.io`
+        : `https://${owner}.github.io/${repo}`;
       return { owner, repo, fullSlug: `${owner}/${repo}`, pagesBase };
     }
 
@@ -749,22 +826,22 @@
       } catch (err) {}
     }
 
-    function getServerLabel() {
-      return activeServer === 2 ? 'SERVER 2 (NETLIFY)' : 'SERVER 1 (GITHUB)';
+    function openServer2Locked() {
+      const lockBox = document.getElementById('server2-locked-box');
+      if (lockBox) lockBox.classList.remove('hidden');
     }
 
     function enterServer(serverNum) {
-      activeServer = serverNum === 2 ? 2 : 1;
-      const selectScreen = document.getElementById('screen-server-select');
-      const studioScreen = document.getElementById('screen-studio');
-      const activeServerText = document.getElementById('active-server-name');
-      const publishStatus = document.getElementById('publish-status');
-
-      selectScreen.classList.add('hidden');
-      studioScreen.classList.remove('hidden');
-
-      activeServerText.textContent = getServerLabel();
-      publishStatus.textContent = `Server aktif: ${getServerLabel()}`;
+      if (serverNum !== 1) {
+        openServer2Locked();
+        return;
+      }
+      const lockBox = document.getElementById('server2-locked-box');
+      if (lockBox) lockBox.classList.add('hidden');
+      document.getElementById('screen-server-select').classList.add('hidden');
+      document.getElementById('screen-studio').classList.remove('hidden');
+      document.getElementById('active-server-name').textContent = 'SERVER 1';
+      document.getElementById('publish-status').textContent = 'Server aktif: SERVER 1';
     }
 
     function backToSelectServer() {
@@ -774,34 +851,14 @@
 
     function getGitHubToken() {
       try {
-        const localToken = (
+        return (
           localStorage.getItem('zikzapp_admin_token_v1') ||
           localStorage.getItem('zikzapp_admin_token') ||
           localStorage.getItem('zikzapp_gh_token') ||
           ''
         ).trim();
-        const embeddedToken = '/* ZIKZ_EMBED_GH_TOKEN */TOKEN_GITHUB_KAMU/* /ZIKZ_EMBED_GH_TOKEN */';
-        return localToken || embeddedToken;
       } catch (err) {
-        return 'TOKEN_GITHUB_KAMU';
-      }
-    }
-
-    function getNetlifyConfig() {
-      try {
-        const localSiteId = (localStorage.getItem('zikzapp_netlify_site_id') || '').trim();
-        const localToken = (localStorage.getItem('zikzapp_netlify_token') || '').trim();
-        const embeddedSiteId = '/* ZIKZ_EMBED_NL_SITE_ID */2ad16a79-c6f8-4219-8b50-ba254b9fdad2/* /ZIKZ_EMBED_NL_SITE_ID */';
-        const embeddedToken = '/* ZIKZ_EMBED_NL_TOKEN */TOKEN_NETLIFY_KAMU/* /ZIKZ_EMBED_NL_TOKEN */';
-        return {
-          siteId: localSiteId || embeddedSiteId,
-          token: localToken || embeddedToken
-        };
-      } catch (err) {
-        return {
-          siteId: '2ad16a79-c6f8-4219-8b50-ba254b9fdad2',
-          token: 'TOKEN_NETLIFY_KAMU'
-        };
+        return '';
       }
     }
 
@@ -829,12 +886,31 @@
       else iframe.classList.remove('mobile-mode');
     }
 
+    function clearPreviewBlobUrls() {
+      for (const u of previewBlobUrls) {
+        try { URL.revokeObjectURL(u); } catch (e) {}
+      }
+      previewBlobUrls = [];
+    }
+
     function resetPreview() {
+      clearPreviewBlobUrls();
       const iframe = document.getElementById('preview-iframe');
       const emptyBox = document.getElementById('preview-empty');
       iframe.srcdoc = '';
       iframe.classList.add('hidden');
       emptyBox.classList.remove('hidden');
+    }
+
+    function resetFolderState() {
+      clearPreviewBlobUrls();
+      folderEntries = [];
+      entryHtmlRelPath = 'index.html';
+      const box = document.getElementById('folder-contents-box');
+      if (box) {
+        box.innerHTML = '';
+        box.classList.add('hidden');
+      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -847,18 +923,100 @@
       checkZikzMaintenance();
     });
 
-    function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.getElementById('html-code').value = e.target.result;
-        if (!document.getElementById('project-name').value.trim()) {
-          document.getElementById('project-name').value = file.name.replace(/\.html?$/i, '');
+    function toBase64Utf8(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    }
+
+    function arrayBufferToBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const slice = bytes.subarray(i, i + chunkSize);
+        for (let j = 0; j < slice.length; j++) binary += String.fromCharCode(slice[j]);
+      }
+      return btoa(binary);
+    }
+
+    async function handleFolderUpload(event) {
+      const files = Array.from(event.target.files || []);
+      const statusEl = document.getElementById('publish-status');
+      resetFolderState();
+      if (!files.length) return;
+
+      const firstRel = files[0].webkitRelativePath || files[0].name;
+      const topFolder = firstRel.includes('/') ? firstRel.split('/')[0] : '';
+
+      if (topFolder && !document.getElementById('project-name').value.trim()) {
+        document.getElementById('project-name').value = topFolder;
+      }
+
+      let mainHtml = '';
+      let foundHtmlRel = '';
+
+      for (const file of files) {
+        const fullRel = (file.webkitRelativePath || file.name).replace(/^\/+/, '');
+        const relPath = topFolder && fullRel.startsWith(topFolder + '/')
+          ? fullRel.slice(topFolder.length + 1)
+          : fullRel;
+
+        if (!relPath || relPath.startsWith('.')) continue;
+        const isHtml = /\.html?$/i.test(relPath);
+
+        if (isHtml) {
+          const textContent = await file.text();
+          folderEntries.push({
+            relPath,
+            file,
+            isHtml: true,
+            textContent,
+            base64: null
+          });
+          if (!foundHtmlRel || /(^|\/)index\.html?$/i.test(relPath)) {
+            foundHtmlRel = relPath;
+            mainHtml = textContent;
+          }
+        } else {
+          folderEntries.push({
+            relPath,
+            file,
+            isHtml: false,
+            textContent: null,
+            base64: null
+          });
         }
-        previewHTML();
-      };
-      reader.readAsText(file);
+      }
+
+      if (foundHtmlRel) {
+        entryHtmlRelPath = foundHtmlRel;
+        document.getElementById('html-code').value = mainHtml;
+      }
+
+      const box = document.getElementById('folder-contents-box');
+      box.classList.remove('hidden');
+      const itemsHtml = folderEntries
+        .map(e => `<div class="${e.isHtml ? 'folder-item-html' : 'folder-item-media'}">• ${e.relPath}</div>`)
+        .join('');
+      box.innerHTML = `<span class="folder-list-head">Folder "${topFolder || 'Terpilih'}" (${folderEntries.length} file)</span>${itemsHtml}`;
+
+      statusEl.textContent = `Folder terbaca (${folderEntries.length} file).`;
+      previewHTML();
+    }
+
+    function buildPreviewHtml(rawCode) {
+      clearPreviewBlobUrls();
+      let out = rawCode;
+      for (const item of folderEntries) {
+        if (item.isHtml || !item.file) continue;
+        const blobUrl = URL.createObjectURL(item.file);
+        previewBlobUrls.push(blobUrl);
+        const escaped = item.relPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        out = out.replace(new RegExp(`(["'])(\\.\\/)?${escaped}\\1`, 'g'), `$1${blobUrl}$1`);
+      }
+      return out;
     }
 
     function previewHTML() {
@@ -868,7 +1026,7 @@
       if (!code.trim()) return;
       emptyBox.classList.add('hidden');
       iframe.classList.remove('hidden');
-      iframe.srcdoc = code;
+      iframe.srcdoc = buildPreviewHtml(code);
     }
 
     function buildSlug(rawValue) {
@@ -880,39 +1038,19 @@
       return clean || ('proyek-' + Math.floor(1000 + Math.random() * 9000));
     }
 
-    function toBase64Utf8(str) {
-      const bytes = new TextEncoder().encode(str);
-      let binary = '';
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      return btoa(binary);
-    }
-
-    async function publishToGitHub(code, fileName, statusEl) {
-      const token = getGitHubToken();
-      if (!token) {
-        statusEl.innerHTML = 'Token GitHub belum tersimpan. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk menyimpan token.';
-        return null;
-      }
-
-      const { fullSlug, pagesBase } = getRepoTarget();
-      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${fileName}`;
-
+    async function putRepoFile(fullSlug, token, repoPath, base64Content, commitMsg) {
+      const apiUrl = `https://api.github.com/repos/${fullSlug}/contents/${repoPath}`;
       let sha = null;
       const checkRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
         cache: 'no-store'
       });
-
       if (checkRes.ok) {
         const existingData = await checkRes.json();
         sha = existingData.sha;
-        if (!confirm(`Timpa "${fileName}" di ${fullSlug}?`)) {
-          statusEl.textContent = 'Dibatalkan.';
-          return null;
-        }
       }
 
-      const payload = { message: `Publish ${fileName} via ZIKZ APP`, content: toBase64Utf8(code) };
+      const payload = { message: commitMsg, content: base64Content };
       if (sha) payload.sha = sha;
 
       const putRes = await fetch(apiUrl, {
@@ -927,110 +1065,65 @@
 
       const result = await putRes.json();
       if (!putRes.ok) throw new Error(result.message || `HTTP ${putRes.status}`);
-
-      return `${pagesBase}/${fileName}`;
     }
 
-    function crc32Bytes(bytes) {
-      let crc = 0xffffffff;
-      for (let i = 0; i < bytes.length; i++) {
-        crc ^= bytes[i];
-        for (let j = 0; j < 8; j++) {
-          crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
-        }
-      }
-      return (crc ^ 0xffffffff) >>> 0;
-    }
-
-    function buildSingleFileZip(fileName, contentStr) {
-      const encoder = new TextEncoder();
-      const nameBytes = encoder.encode(fileName);
-      const dataBytes = encoder.encode(contentStr);
-      const crc = crc32Bytes(dataBytes);
-      const size = dataBytes.length;
-
-      const localHeader = new Uint8Array(30 + nameBytes.length);
-      const lv = new DataView(localHeader.buffer);
-      lv.setUint32(0, 0x04034b50, true);
-      lv.setUint16(4, 20, true);
-      lv.setUint16(6, 0x0800, true);
-      lv.setUint16(8, 0, true);
-      lv.setUint16(10, 0, true);
-      lv.setUint16(12, 0, true);
-      lv.setUint32(14, crc, true);
-      lv.setUint32(18, size, true);
-      lv.setUint32(22, size, true);
-      lv.setUint16(26, nameBytes.length, true);
-      lv.setUint16(28, 0, true);
-      localHeader.set(nameBytes, 30);
-
-      const cdOffset = localHeader.length + dataBytes.length;
-      const centralHeader = new Uint8Array(46 + nameBytes.length);
-      const cv = new DataView(centralHeader.buffer);
-      cv.setUint32(0, 0x02014b50, true);
-      cv.setUint16(4, 20, true);
-      cv.setUint16(6, 20, true);
-      cv.setUint16(8, 0x0800, true);
-      cv.setUint16(10, 0, true);
-      cv.setUint16(12, 0, true);
-      cv.setUint16(14, 0, true);
-      cv.setUint32(16, crc, true);
-      cv.setUint32(20, size, true);
-      cv.setUint32(24, size, true);
-      cv.setUint16(28, nameBytes.length, true);
-      cv.setUint16(30, 0, true);
-      cv.setUint16(32, 0, true);
-      cv.setUint16(34, 0, true);
-      cv.setUint16(36, 0, true);
-      cv.setUint32(38, 0, true);
-      cv.setUint32(42, 0, true);
-      centralHeader.set(nameBytes, 46);
-
-      const eocd = new Uint8Array(22);
-      const ev = new DataView(eocd.buffer);
-      ev.setUint32(0, 0x06054b50, true);
-      ev.setUint16(4, 0, true);
-      ev.setUint16(6, 0, true);
-      ev.setUint16(8, 1, true);
-      ev.setUint16(10, 1, true);
-      ev.setUint32(12, centralHeader.length, true);
-      ev.setUint32(16, cdOffset, true);
-      ev.setUint16(20, 0, true);
-
-      const zipBytes = new Uint8Array(localHeader.length + dataBytes.length + centralHeader.length + eocd.length);
-      zipBytes.set(localHeader, 0);
-      zipBytes.set(dataBytes, localHeader.length);
-      zipBytes.set(centralHeader, localHeader.length + dataBytes.length);
-      zipBytes.set(eocd, localHeader.length + dataBytes.length + centralHeader.length);
-      return zipBytes;
-    }
-
-    async function publishToNetlify(code, fileName, statusEl) {
-      const { siteId, token } = getNetlifyConfig();
-      if (!siteId || !token) {
-        statusEl.innerHTML = 'Site ID atau Token Netlify belum tersimpan. Buka <a href="dasborzikzapp.html">dasborzikzapp.html</a> untuk mengisi NETLIFY API (SERVER 2).';
+    async function publishToGitHub(code, slug, statusEl) {
+      const token = getGitHubToken();
+      if (!token) {
+        statusEl.textContent = 'Token belum tersimpan di browser ini.';
         return null;
       }
 
-      const zipBytes = buildSingleFileZip(fileName, code);
-      const deployUrl = `https://api.netlify.com/api/v1/sites/${encodeURIComponent(siteId)}/deploys`;
+      const { fullSlug, pagesBase } = getActiveRepoTarget();
+      const hasAssets = folderEntries.some(e => !e.isHtml);
 
-      const res = await fetch(deployUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/zip'
-        },
-        body: zipBytes
-      });
+      if (hasAssets) {
+        const queue = [];
+        for (const item of folderEntries) {
+          if (item.isHtml) {
+            const content = item.relPath === entryHtmlRelPath && code.trim() ? code : item.textContent;
+            queue.push({ repoPath: `${slug}/${item.relPath}`, base64: toBase64Utf8(content) });
+          } else {
+            if (item.file && item.file.size > 24 * 1024 * 1024) {
+              throw new Error(`File "${item.relPath}" terlalu besar (>24 MB).`);
+            }
+            const buf = await item.file.arrayBuffer();
+            queue.push({ repoPath: `${slug}/${item.relPath}`, base64: arrayBufferToBase64(buf) });
+          }
+        }
+        if (!queue.some(q => q.repoPath === `${slug}/${entryHtmlRelPath}`)) {
+          queue.unshift({ repoPath: `${slug}/${entryHtmlRelPath}`, base64: toBase64Utf8(code) });
+        }
 
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.message || `HTTP ${res.status}`);
+        const checkRes = await fetch(`https://api.github.com/repos/${fullSlug}/contents/${slug}/${entryHtmlRelPath}?t=${Date.now()}`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+          cache: 'no-store'
+        });
+        if (checkRes.ok && !confirm(`Timpa folder "${slug}"?`)) {
+          statusEl.textContent = 'Dibatalkan.';
+          return null;
+        }
+
+        for (let i = 0; i < queue.length; i++) {
+          statusEl.textContent = `Mengupload (${i + 1}/${queue.length}): ${queue[i].repoPath}...`;
+          await putRepoFile(fullSlug, token, queue[i].repoPath, queue[i].base64, `Publish ${queue[i].repoPath} via ZIKZ APP`);
+        }
+        return `${pagesBase}/${slug}/${entryHtmlRelPath}`;
       }
 
-      const baseUrl = (data.ssl_url || data.url || `https://${siteId}.netlify.app`).replace(/\/+$/, '');
-      return `${baseUrl}/${fileName}`;
+      const fileName = `${slug}.html`;
+      const checkRes = await fetch(`https://api.github.com/repos/${fullSlug}/contents/${fileName}?t=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+        cache: 'no-store'
+      });
+
+      if (checkRes.ok && !confirm(`Timpa "${fileName}"?`)) {
+        statusEl.textContent = 'Dibatalkan.';
+        return null;
+      }
+
+      await putRepoFile(fullSlug, token, fileName, toBase64Utf8(code), `Publish ${fileName} via ZIKZ APP`);
+      return `${pagesBase}/${fileName}`;
     }
 
     async function createWebsite() {
@@ -1047,22 +1140,19 @@
 
       btn.disabled = true;
       linkActions.classList.add('hidden');
-      statusEl.textContent = `Membuat web di ${getServerLabel()}...`;
+      statusEl.textContent = 'Sedang membuat link web...';
 
       try {
         const slug = buildSlug(rawName);
-        const fileName = `${slug}.html`;
-        const publishedUrl = activeServer === 2
-          ? await publishToNetlify(code, fileName, statusEl)
-          : await publishToGitHub(code, fileName, statusEl);
+        const publishedUrl = await publishToGitHub(code, slug, statusEl);
 
         if (!publishedUrl) return;
 
         lastPublishedUrl = publishedUrl;
         linkActions.classList.remove('hidden');
-        statusEl.innerHTML = `Berhasil dibuat di <strong>${getServerLabel()}</strong>: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
+        statusEl.innerHTML = `Berhasil dibuat: <a href="${lastPublishedUrl}" target="_blank" rel="noopener noreferrer">${lastPublishedUrl}</a>`;
       } catch (err) {
-        statusEl.textContent = `Gagal (${getServerLabel()}): ${err.message}`;
+        statusEl.textContent = `Gagal: ${err.message}`;
       } finally {
         btn.disabled = false;
       }
@@ -1098,9 +1188,10 @@
       document.getElementById('html-code').value = '';
       document.getElementById('html-file').value = '';
       document.getElementById('project-name').value = '';
+      resetFolderState();
       resetPreview();
       document.getElementById('published-link-actions').classList.add('hidden');
-      document.getElementById('publish-status').textContent = `Server aktif: ${getServerLabel()}`;
+      document.getElementById('publish-status').textContent = 'Server aktif: SERVER 1';
     }
   </script>
 </body>

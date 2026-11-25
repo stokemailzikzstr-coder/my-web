@@ -48,7 +48,6 @@
       background: linear-gradient(180deg, rgba(5, 5, 8, 0.35) 0%, rgba(5, 5, 8, 0.68) 100%);
     }
 
-    /* KOTAK BENTUK LAYAR HP DI AWAL MASUK */
     .phone-intro-overlay {
       position: fixed;
       inset: 0;
@@ -221,7 +220,6 @@
       margin: 0.2rem auto 0;
     }
 
-    /* HEADER UTAMA */
     .hero-header {
       padding: 2rem 1rem 0.9rem;
       text-align: center;
@@ -516,7 +514,7 @@
       padding: 0.82rem 1rem; font-size: 0.76rem; font-weight: 800;
       letter-spacing: 0.09em; text-transform: uppercase; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-      transition: transform 0.14s ease, filter 0.2s ease;
+      text-decoration: none; transition: transform 0.14s ease, filter 0.2s ease;
     }
 
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -525,7 +523,7 @@
     .btn-fire { background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; box-shadow: 0 10px 24px rgba(255, 30, 66, 0.34); }
     .btn-fire:hover:not(:disabled) { filter: brightness(1.08); }
     .btn-ember { background: rgba(255, 85, 0, 0.12); color: #ffb285; border: 1px solid rgba(255, 85, 0, 0.5); }
-    .btn-dark { background: rgba(14, 14, 22, 0.95); color: var(--text); border: 1px solid var(--border); text-decoration: none; }
+    .btn-dark { background: rgba(14, 14, 22, 0.95); color: var(--text); border: 1px solid var(--border); }
     .btn-sm { width: auto; padding: 0.45rem 0.75rem; font-size: 0.68rem; border-radius: 7px; flex-shrink: 0; }
 
     .publish-box { margin-top: 1rem; padding: 1rem; border-radius: 12px; background: rgba(7, 7, 12, 0.96); border: 1px solid rgba(255, 85, 0, 0.45); }
@@ -553,7 +551,6 @@
   <video id="bg-video" autoplay muted loop playsinline preload="auto" src="ssstik.io_1795312194787.mp4"></video>
   <div class="bg-scrim"></div>
 
-  <!-- KOTAK LAYAR HP DI AWAL MASUK -->
   <div id="phone-intro-overlay" class="phone-intro-overlay">
     <div class="phone-frame">
       <div>
@@ -723,6 +720,8 @@
   </div>
 
   <script>
+    const EMBEDDED_GITHUB_TOKEN = 'TEMPEL_TOKEN_KAMU_DI_SINI';
+
     let lastPublishedUrl = '';
     let folderEntries = [];
     let entryHtmlRelPath = 'index.html';
@@ -857,6 +856,10 @@
     }
 
     function getGitHubToken() {
+      const embedded = String(EMBEDDED_GITHUB_TOKEN || '').trim();
+      if (embedded && embedded !== 'TEMPEL_TOKEN_KAMU_DI_SINI') {
+        return embedded;
+      }
       try {
         return (
           localStorage.getItem('zikzapp_admin_token_v1') ||

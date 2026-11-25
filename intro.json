@@ -2,15 +2,6 @@
   "enabled": true,
   "chip": "ZIKZ APP // INTRO",
   "heading": "SELAMAT DATANG DI ZIKZ APP",
-  "lead": "Ubah kode HTML, CSS & JS menjadi halaman web siap pratinjau dan siap terbit.",
-  "num1": "01",
-  "item1": "",
-  "num2": "02",
-  "item2": "",
-  "num3": "03",
-  "item3": "",
-  "num4": "04",
-  "item4": "",
-  "body": "Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.",
+  "paragraph": "WEB UNTUK MEMUDAHKAN PEMBUATAN SEBUAH WEB HANYA 1 KALI CLIK",
   "buttonText": "MASUK KE HALAMAN UTAMA ➔"
 }

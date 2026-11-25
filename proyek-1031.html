@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZIKZ APP // DASBOR</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    :root {
+      --bg: #050508;
+      --card-bg: rgba(11, 11, 17, 0.92);
+      --input-bg: #07070c;
+      --border: rgba(255, 255, 255, 0.12);
+      --fire-1: #ff5500;
+      --fire-2: #ff1e42;
+      --gold: #ffbe3b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: #050508;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .bg-base {
+      position: fixed; inset: 0; z-index: -5;
+      background:
+        radial-gradient(ellipse 75% 45% at 50% 0%, rgba(255, 85, 0, 0.24), transparent 65%),
+        radial-gradient(circle at 15% 85%, rgba(255, 30, 66, 0.14), transparent 45%),
+        #050508;
+    }
+
+    #bg-video {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      object-fit: cover; z-index: -2; opacity: 0.45; pointer-events: none;
+    }
+
+    .bg-scrim {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(180deg, rgba(5, 5, 8, 0.45) 0%, rgba(5, 5, 8, 0.78) 100%);
+    }
+
+    .topbar {
+      max-width: 920px; margin: 0 auto; padding: 1.25rem 1rem 0.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+
+    .brand-logo {
+      width: 44px; height: 44px; border-radius: 12px; padding: 2px;
+      background: linear-gradient(135deg, var(--gold), var(--fire-1), var(--fire-2));
+      flex-shrink: 0;
+    }
+
+    .brand-logo img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block;
+    }
+
+    .brand-title {
+      font-size: 1rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      background: linear-gradient(110deg, #fff 0%, var(--gold) 50%, var(--fire-1) 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .brand-sub {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted);
+    }
+
+    .container {
+      max-width: 920px; margin: 0 auto; padding: 0.75rem 1rem 3rem;
+      display: grid; grid-template-columns: 1fr; gap: 1.1rem;
+    }
+
+    @media (min-width: 820px) {
+      .container { grid-template-columns: 1fr 1fr; align-items: start; }
+    }
+
+    .panel {
+      background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+      padding-bottom: 0.75rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 0.84rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.55rem;
+    }
+
+    .accent-bar {
+      width: 4px; height: 16px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--gold), var(--fire-1), var(--fire-2));
+    }
+
+    .field { margin-bottom: 0.9rem; }
+
+    .field-label {
+      display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #e2e8f0; margin-bottom: 0.42rem;
+    }
+
+    input[type="text"], input[type="password"], textarea {
+      width: 100%; background: var(--input-bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.75rem 0.85rem; font-size: 0.85rem;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    textarea {
+      min-height: 86px; resize: vertical;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.5;
+    }
+
+    input:focus, textarea:focus {
+      outline: none; border-color: var(--fire-1);
+      box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.2);
+    }
+
+    .check-row {
+      display: flex; align-items: center; gap: 0.55rem;
+      background: rgba(255, 85, 0, 0.08); border: 1px solid rgba(255, 85, 0, 0.3);
+      border-radius: 10px; padding: 0.7rem 0.85rem; margin-bottom: 0.9rem; cursor: pointer;
+    }
+
+    .check-row input { width: 17px; height: 17px; accent-color: var(--fire-1); cursor: pointer; }
+    .check-row span { font-size: 0.82rem; font-weight: 700; color: #ffb285; }
+
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-top: 0.4rem; }
+
+    .btn {
+      width: 100%; appearance: none; border: none; border-radius: 10px;
+      padding: 0.78rem 0.9rem; font-size: 0.74rem; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;
+      text-decoration: none; transition: transform 0.14s ease, filter 0.2s ease;
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn-fire { background: linear-gradient(135deg, var(--fire-1), var(--fire-2)); color: #fff; box-shadow: 0 8px 20px rgba(255, 30, 66, 0.3); }
+    .btn-ember { background: rgba(255, 85, 0, 0.14); color: #ffb285; border: 1px solid rgba(255, 85, 0, 0.48); }
+    .btn-dark { background: rgba(16, 16, 26, 0.95); color: var(--text); border: 1px solid var(--border); }
+    .btn-sm { width: auto; padding: 0.48rem 0.8rem; font-size: 0.7rem; border-radius: 8px; }
+
+    .status-box {
+      margin-top: 0.85rem; padding: 0.7rem 0.8rem; border-radius: 10px;
+      background: rgba(5, 5, 8, 0.85); border: 1px solid rgba(255, 255, 255, 0.09);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; line-height: 1.5; color: var(--muted);
+      word-break: break-word;
+    }
+
+    .ok { color: #4ade80; }
+    .warn { color: #ffbe3b; }
+    .err { color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="bg-base"></div>
+  <video id="bg-video" autoplay muted loop playsinline preload="auto" src="ssstik.io_1795312194787.mp4"></video>
+  <div class="bg-scrim"></div>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo"><img src="HALO.png" alt="ZIKZ APP"></div>
+      <div>
+        <div class="brand-title">ZIKZ APP // DASBOR</div>
+        <div class="brand-sub" id="repo-info">Memuat info repo...</div>
+      </div>
+    </div>
+    <a class="btn btn-dark btn-sm" href="index.html">⬅ Kembali ke Studio</a>
+  </div>
+
+  <main class="container">
+    <!-- KARTU 1: TOKEN & REPO -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="accent-bar"></span><span>Koneksi GitHub</span></div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="gh-token">GitHub Personal Access Token</label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="gh-repo">Target Repo (owner/repo)</label>
+        <input type="text" id="gh-repo" placeholder="Contoh: zikzapp/my-web">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-fire" type="button" onclick="saveConnection()">Simpan Lokal</button>
+        <button class="btn btn-dark" type="button" onclick="clearToken()">Hapus Token</button>
+      </div>
+
+      <div class="status-box" id="conn-status">Menunggu pengaturan koneksi...</div>
+    </section>
+
+    <!-- KARTU 2: MAINTENANCE -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="accent-bar"></span><span>System Maintenance</span></div>
+      </div>
+
+      <label class="check-row" for="maint-enabled">
+        <input type="checkbox" id="maint-enabled">
+        <span>Aktifkan Mode Maintenance</span>
+      </label>
+
+      <div class="field">
+        <label class="field-label" for="maint-msg">Pesan Maintenance</label>
+        <textarea id="maint-msg">Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP.</textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ember" type="button" onclick="saveMaintenanceLocal()">Simpan Lokal</button>
+        <button class="btn btn-fire" type="button" onclick="pushJsonFile('maintenance.json', getMaintenancePayload(), 'maint-status')">Push ke Repo</button>
+      </div>
+
+      <div class="status-box" id="maint-status">Status maintenance siap diatur.</div>
+    </section>
+
+    <!-- KARTU 3: INTRO HP (1 PARAGRAF) -->
+    <section class="panel" style="grid-column: 1 / -1;">
+      <div class="panel-head">
+        <div class="panel-title"><span class="accent-bar"></span><span>Pengaturan Intro Layar HP</span></div>
+      </div>
+
+      <label class="check-row" for="intro-enabled">
+        <input type="checkbox" id="intro-enabled" checked>
+        <span>Tampilkan Intro Layar HP Saat Awal Masuk</span>
+      </label>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+        <div class="field">
+          <label class="field-label" for="intro-chip">Label Atas</label>
+          <input type="text" id="intro-chip" value="ZIKZ APP // INTRO">
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="intro-heading">Judul Intro</label>
+          <input type="text" id="intro-heading" value="SELAMAT DATANG DI ZIKZ APP">
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="intro-btn">Teks Tombol Bawah</label>
+          <input type="text" id="intro-btn" value="MASUK KE HALAMAN UTAMA ➔">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="intro-paragraph">Isi Intro (1 Paragraf)</label>
+        <textarea id="intro-paragraph">Pilih 1 folder berisi kode HTML beserta foto, video, atau musik untuk dicek lewat Live Preview mode Full maupun HP, lalu unduh file HTML atau terbitkan langsung menjadi link web. Tekan SKIP di atas atau tombol di bawah untuk masuk ke pemilihan server.</textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ember" type="button" onclick="saveIntroLocal()">Simpan Lokal</button>
+        <button class="btn btn-fire" type="button" onclick="pushJsonFile('intro.json', getIntroPayload(), 'intro-status')">Push ke Repo</button>
+      </div>
+
+      <div class="status-box" id="intro-status">Status intro siap diatur.</div>
+    </section>
+  </main>
+
+  <script>
+    function detectDefaultRepo() {
+      const host = window.location.hostname;
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      let owner = 'zikzapp';
+      let repo = 'my-web';
+      if (host.includes('github.io')) {
+        owner = host.split('.')[0] || owner;
+        repo = parts.length > 0 && !parts[0].endsWith('.html') ? parts[0] : `${owner}.github.io`;
+      }
+      return `${owner}/${repo}`;
+    }
+
+    function getTargetRepo() {
+      const inputVal = (document.getElementById('gh-repo').value || '').trim();
+      return inputVal || localStorage.getItem('zikzapp_gh_repo_s1') || detectDefaultRepo();
+    }
+
+    function getToken() {
+      return (
+        document.getElementById('gh-token').value ||
+        localStorage.getItem('zikzapp_admin_token_v1') ||
+        localStorage.getItem('zikzapp_admin_token') ||
+        localStorage.getItem('zikzapp_gh_token') ||
+        ''
+      ).trim();
+    }
+
+    function refreshRepoLabel() {
+      document.getElementById('repo-info').textContent = `Repo: ${getTargetRepo()}`;
+    }
+
+    function saveConnection() {
+      const token = document.getElementById('gh-token').value.trim();
+      const repo = document.getElementById('gh-repo').value.trim() || detectDefaultRepo();
+      const status = document.getElementById('conn-status');
+
+      if (token) {
+        localStorage.setItem('zikzapp_admin_token_v1', token);
+        localStorage.setItem('zikzapp_admin_token', token);
+        localStorage.setItem('zikzapp_gh_token', token);
+      }
+      localStorage.setItem('zikzapp_gh_repo_s1', repo);
+      refreshRepoLabel();
+
+      status.innerHTML = token
+        ? `<span class="ok">Tersimpan di browser ini.</span> Repo: ${repo}`
+        : `<span class="warn">Repo disimpan (${repo}), token masih kosong.</span>`;
+    }
+
+    function clearToken() {
+      localStorage.removeItem('zikzapp_admin_token_v1');
+      localStorage.removeItem('zikzapp_admin_token');
+      localStorage.removeItem('zikzapp_gh_token');
+      document.getElementById('gh-token').value = '';
+      document.getElementById('conn-status').innerHTML = `<span class="warn">Token dihapus dari browser ini.</span>`;
+    }
+
+    function getMaintenancePayload() {
+      return {
+        maintenance: document.getElementById('maint-enabled').checked,
+        message: document.getElementById('maint-msg').value.trim() || 'Sedang dalam perbaikan dan pemeliharaan sistem ZIKZ APP.'
+      };
+    }
+
+    function saveMaintenanceLocal() {
+      const payload = getMaintenancePayload();
+      localStorage.setItem('zikzapp_maintenance_v1', JSON.stringify(payload));
+      document.getElementById('maint-status').innerHTML = `<span class="ok">Maintenance disimpan lokal</span> (aktif: ${payload.maintenance}).`;
+    }
+
+    function getIntroPayload() {
+      return {
+        enabled: document.getElementById('intro-enabled').checked,
+        chip: document.getElementById('intro-chip').value.trim() || 'ZIKZ APP // INTRO',
+        heading: document.getElementById('intro-heading').value.trim() || 'SELAMAT DATANG DI ZIKZ APP',
+        paragraph: document.getElementById('intro-paragraph').value.trim(),
+        buttonText: document.getElementById('intro-btn').value.trim() || 'MASUK KE HALAMAN UTAMA ➔'
+      };
+    }
+
+    function saveIntroLocal() {
+      const payload = getIntroPayload();
+      localStorage.setItem('zikzapp_phone_intro_v1', JSON.stringify(payload));
+      document.getElementById('intro-status').innerHTML = `<span class="ok">Intro HP disimpan lokal</span> (tampil: ${payload.enabled}).`;
+    }
+
+    function toBase64Utf8(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = '';
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin);
+    }
+
+    async function pushJsonFile(filename, dataObj, statusId) {
+      const statusEl = document.getElementById(statusId);
+      const token = getToken();
+      const repo = getTargetRepo();
+
+      if (!token) {
+        statusEl.innerHTML = `<span class="err">Token belum diisi.</span> Isi token di kartu Koneksi GitHub lalu klik Simpan Lokal.`;
+        return;
+      }
+
+      statusEl.textContent = `Mengirim ${filename} ke ${repo}...`;
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${filename}`;
+
+      try {
+        let sha = null;
+        const getRes = await fetch(`${apiUrl}?t=${Date.now()}`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+          cache: 'no-store'
+        });
+        if (getRes.ok) {
+          const existing = await getRes.json();
+          sha = existing.sha;
+        }
+
+        const body = {
+          message: `Update ${filename} via ZIKZ DASBOR`,
+          content: toBase64Utf8(JSON.stringify(dataObj, null, 2))
+        };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        const resJson = await putRes.json();
+        if (!putRes.ok) throw new Error(resJson.message || `HTTP ${putRes.status}`);
+
+        statusEl.innerHTML = `<span class="ok">Berhasil push ${filename}</span> ke ${repo}.`;
+      } catch (err) {
+        statusEl.innerHTML = `<span class="err">Gagal:</span> ${err.message}`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const vid = document.getElementById('bg-video');
+      if (vid) { vid.muted = true; vid.play().catch(() => {}); }
+
+      const savedToken = getToken();
+      if (savedToken) document.getElementById('gh-token').value = savedToken;
+
+      const savedRepo = localStorage.getItem('zikzapp_gh_repo_s1') || detectDefaultRepo();
+      document.getElementById('gh-repo').value = savedRepo;
+      refreshRepoLabel();
+
+      document.getElementById('conn-status').innerHTML = savedToken
+        ? `<span class="ok">Token terdeteksi di browser ini.</span>`
+        : `<span class="warn">Token belum tersimpan di browser ini.</span>`;
+
+      try {
+        const rawIntro = localStorage.getItem('zikzapp_phone_intro_v1');
+        if (rawIntro) {
+          const intro = JSON.parse(rawIntro);
+          if (typeof intro.enabled === 'boolean') document.getElementById('intro-enabled').checked = intro.enabled;
+          if (intro.chip) document.getElementById('intro-chip').value = intro.chip;
+          if (intro.heading) document.getElementById('intro-heading').value = intro.heading;
+          if (intro.buttonText) document.getElementById('intro-btn').value = intro.buttonText;
+          if (intro.paragraph) document.getElementById('intro-paragraph').value = intro.paragraph;
+        }
+      } catch (e) {}
+    });
+  </script>
+</body>
+</html>
